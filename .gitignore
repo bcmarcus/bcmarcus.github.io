@@ -1,5 +1,10 @@
+# configs
+functions/config.js
+src/firebaseConfig.js
+
 # dependencies
 /node_modules
+/functions/node_modules
 /.pnp
 .pnp.js
 
