@@ -1,0 +1,88 @@
+.recipe-list {
+  display: grid;
+  gap: 10px;
+}
+
+.recipe-list-1 {
+  grid-template-columns: repeat(1, 1fr);
+  column-gap: 20px;
+}
+
+.recipe-list-2 {
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 20px;
+}
+
+.recipe-list-3 {
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 20px;
+}
+
+.recipe {
+  position: relative;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.recipe:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.recipe-number {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.recipe-1 .recipe-number {
+  font-size: 32px;
+}
+
+.recipe-2 .recipe-number {
+  font-size: 24px;
+}
+
+.recipe-3 .recipe-number {
+  font-size: 18px;
+}
+
+.recipe-other .recipe-number {
+  font-size: 16px;
+}
+
+.dropdown button {
+  background-color: #007bff;
+  color: #fff;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown button:hover {
+  background-color: #0056b3;
+}
+
+.dropdown {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  border: 1px solid #ccc;
+  display: none;
+  z-index: 1;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.recipe:hover .dropdown {
+  display: flex;
+}
+
+.recipe.open .dropdown {
+  display: flex;
+}

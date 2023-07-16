@@ -1,0 +1,91 @@
+.home-page-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.home-page-layout-content {
+  flex-grow: 1;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #0050f0;
+  height: 92px; /* Add a fixed height for the header */
+}
+
+.header-buttons {
+  display: flex;
+  gap: 0; /* Remove the gap between buttons */
+  height: 100%; /* Make the buttons container full height */
+}
+
+.header-button {
+  display: flex;
+  align-items: center; /* Vertically center the text */
+  justify-content: center; /* Horizontally center the text */
+  text-decoration: none;
+  width: 120px; /* Set a fixed width for all buttons */
+  height: 100%; /* Make the buttons full height within their containers */
+  box-sizing: border-box; /* Include border and padding in the width and height */
+  transition: all 0.3s ease;
+}
+
+.header-button:hover,
+.header-button:focus {
+  background-color: #444;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-logo {
+  height: 100%; /* Set the logo to be half the height of the header container */
+  width: auto; /* Maintain the aspect ratio */
+}
+
+.login-button,
+.menu-button {
+  color: white;
+  text-decoration: none;
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.login-button:hover,
+.menu-button:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.footer {
+  background-color: #333;
+  color: #fff;
+  padding: 1rem 0;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.social-media-icons {
+  display: flex;
+  gap: 1rem;
+}
+
+.footer-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.copyright {
+  font-size: 0.8rem;
+}

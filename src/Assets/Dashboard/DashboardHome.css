@@ -1,0 +1,75 @@
+/* DashboardHome.css */
+@import '~bootstrap/dist/css/bootstrap.min.css';
+
+.dashboard-home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  height: 100%;
+  width: 100%;
+}
+
+.dashboard-sections {
+  display: flex;
+  gap: 20px;
+  flex-grow: 1;
+  width: 100%;
+}
+
+.ingredients-section,
+.recipes-section,
+.charts-section {
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  padding: 20px;
+  flex-grow: 1;
+}
+
+.charts-section h2 {
+  margin-bottom: 20px;
+}
+
+.content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+}
+
+.section-analytics {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.recipe-button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.section-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+.progress-container {
+  position: relative;
+  height: 40px;
+  /* border-radius: 4px; */
+  background-color: #f3f3f3;
+  width: 100%;
+}

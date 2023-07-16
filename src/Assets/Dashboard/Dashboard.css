@@ -1,0 +1,47 @@
+.tab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 20px;
+  margin: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1.25rem;
+  text-align: left;
+  height: 80px;
+  outline: none;
+  color: #fff;
+}
+
+.tab:hover { 
+  background: rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s;
+}
+
+#navigationDiv {
+  width: 200px;
+}
+
+#navigation {
+  position: fixed;
+  height: 100%;
+  overflow-y: auto;
+  background: #0050f0;
+  padding: 0
+}
+
+.dashboard-logo {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  height: 80px;
+  outline: none;
+  color: #fff;
+}

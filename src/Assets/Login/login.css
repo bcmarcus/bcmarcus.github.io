@@ -1,0 +1,152 @@
+.login-a {
+  color: #4287f5;
+  text-decoration: none;
+}
+
+.login-a:hover {
+  text-decoration: underline;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  margin-top: 20px;
+}
+
+input[type="email"],
+input[type="password"] {
+  box-sizing: border-box; /* Add this line */
+  padding: 10px;
+  border: 1px solid #d0d0d0;
+  border-radius: 0; /* Remove the rounded corners */
+  margin-bottom: 10px;
+  width: 100%;
+  font-size: 16px;
+}
+
+button[type="submit"] {
+  background-color: #0070e0;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 3px;
+  width: 100%; /* Set the width to match the input fields */
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 0px;
+}
+
+button[type="submit"]:hover {
+  background-color: #0059b3;
+}
+
+.login-container {
+  box-sizing: border-box;
+  width: 400px;
+  padding: 20px;
+  margin: 40px auto; /* Add a 40px margin on the top and bottom, and auto on the left and right */
+  margin-top: 150px;
+  background-color: #fff;
+  box-shadow: 0 0 3px #ccc; /* Add a shadow around the container */
+  border: 1px solid #ccc; /* Keep the border */
+  border-radius: 5px; /* Optional: Add a border-radius to smooth container edges */
+}
+
+.login-heading {
+  font-size: 24px;
+  text-align: left;
+  width: 100%;
+  margin-bottom: 0; /* Remove the bottom margin */
+  margin-top: 0px; /* Add a 20px top margin */
+}
+
+.create-account-link {
+  text-align: right;
+  font-size: 16px;
+  width: 100%;
+  margin-bottom: 0px;
+  margin-top: 8px; /* Add a 20px top margin */
+  text-underline-position: under;
+}
+
+.login-account-link {
+  text-align: right;
+  font-size: 16px;
+  width: 100%;
+  margin-bottom: 0px;
+  margin-top: 8px; /* Add a 20px top margin */
+  text-underline-position: under;
+}
+
+.forgot-password-link {
+  color: #007bff;
+  text-decoration: none;
+  text-align: left;
+  display: block;
+  margin-top: 10px;
+}
+
+.forgot-password-link:hover {
+  text-decoration: underline;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+  font-size: 16px;
+  margin-top: 10px;
+  margin-bottom: 0px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+  width: 100%;
+}
+
+.divider-line-left {
+  flex-grow: 1;
+  height: 1px;
+  width: 100%;
+  background-color: #000;
+  margin-right: 10px;
+}
+
+.divider-line-right {
+  flex-grow: 1;
+  height: 1px;
+  width: 100%;
+  background-color: #000;
+  margin-left: 10px;
+}
+
+.google-button,
+.apple-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  color: #000;
+  padding: 10px;
+  border: 1px solid #d0d0d0;
+  border-radius: 3px;
+  width: 100%;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.google-button:hover,
+.apple-button:hover {
+  background-color: #f5f5f5;
+}
+
+.google-button img,
+.apple-button img {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
