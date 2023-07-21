@@ -74,6 +74,10 @@ For Apple, follow these steps [Apple Firebase Auth Setup](https://firebase.googl
 #### 1.3.4 Firebase Hosting
 
 Firebase allows you to host the front end online through a Firebase website. Using `firebase deploy` pushes your website to production.
+If you dont want to run `npm run build` each time, add these lines of code into firebase.json in the hosting object.
+```"predeploy": [
+  "rm -rf dist && npm run build"
+],```
 
 #### 1.3.5 Firebase Functions
 
@@ -95,7 +99,40 @@ Add your secrets in the manager, and then go to `functions/config.js` and put in
 
 React is responsible for front-end functionality and presentation. It's structured into reusable components, which are easy to manage and update.
 
-### 1.5 Final Checks
+### 1.5 Docker
+
+docker login
+
+nano ~/.bashrc OR nano ~/.zshrc
+// add this
+export CALL_TO_ACTION_ID=your_value
+// exit the terminal
+// this applies changes
+source ~/.bashrc
+
+
+```
+gcloud init (if it hasnt been made already)
+gcloud auth login
+gcloud config set project PROJECT_ID
+gcloud services enable artifactregistry.googleapis.com
+gcloud artifacts repositories create api --repository-format=docker --location=us-central1 --description="API Repository"
+gcloud auth configure-docker us-central1-docker.pkg.dev
+gcloud components install docker-credential-gcr
+```
+
+gcloud builds submit --tag us-central1-docker.pkg.dev/my-project-id/my-repository/my-image
+
+
+`gcloud builds submit --tag us-central1-docker.pkg.dev/api`
+This command builds your Docker image and pushes it to Google Container Registry, using Google Cloud Build. codelabs.developers.google.com
+
+$GCP_KEY_PATH is an environment variable set on your local machine that points to the location of your service account key file. When you start your service, you'll need to set this environment variable:
+
+｀export GCP_KEY_PATH=~/keys/project-key.json｀
+｀docker-compose -f docker-compose.yml -f docker-compose.access.yml up｀
+
+### 1.6 Final Checks
 Ran npm install
 Changed /src/firebaseConfig.js
 Changed /functions/config.js

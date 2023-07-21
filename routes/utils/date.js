@@ -1,9 +1,10 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
-admin.initializeApp();
+const express = require('express');
+const router = express.Router();
 
-exports.getCurrentTimestamp = functions.https.onCall(async (data, context) => {
+router.get('/date', async (req, res) => {
   try {
     const timestamp = admin.firestore.Timestamp.now();
     const dateTime = new Date(timestamp.toMillis());
@@ -14,9 +15,12 @@ exports.getCurrentTimestamp = functions.https.onCall(async (data, context) => {
       time: dateTime.toLocaleTimeString(),
     };
 
-    return payload;
+    console.log (payload);
+    res.json(payload); 
   } catch (error) {
-    console.error("Error occurred:", error);
-    throw new functions.https.HttpsError('internal', 'An internal error occurred.');
+    console.error("Error occurred:", error.message);
+    res.status(500).send('An internal error occurred.');
   }
 });
+
+module.exports = router;

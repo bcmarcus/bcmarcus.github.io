@@ -1,6 +1,7 @@
 # configs
 functions/config.js
 src/firebaseConfig.js
+config/*
 
 # dependencies
 /node_modules
@@ -10,6 +11,7 @@ src/firebaseConfig.js
 
 # testing
 /coverage
+/functions/tests
 
 # production
 /dist

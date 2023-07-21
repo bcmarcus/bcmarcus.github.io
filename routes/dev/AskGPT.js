@@ -1,4 +1,4 @@
-const config = require("../config.js");
+const config = require("../../config/config.js");
 const functions = require("firebase-functions");
 const {SecretManagerServiceClient} = require("@google-cloud/secret-manager");
 const { Configuration, OpenAIApi } = require("openai");
@@ -6,7 +6,7 @@ const { Configuration, OpenAIApi } = require("openai");
 const secrets = new SecretManagerServiceClient();
 
 async function getSecret() {
-  const secretVersionName = `projects/${config.prod.googleSecrets.openAI.projectID}/secrets/${config.prod.googleSecrets.openAI.secretName}/versions/latest`;
+  const secretVersionName = `projects/${config.prod.googleSecrets.projectID}/secrets/${config.prod.googleSecrets.openAI.auth}/versions/latest`;
   const [version] = await secrets.accessSecretVersion({name: secretVersionName});
   return version.payload.data.toString("utf8");
 }

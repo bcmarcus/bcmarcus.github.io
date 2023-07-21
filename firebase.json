@@ -3,26 +3,34 @@
     "rules": "database.rules.json"
   },
   "hosting": {
-    "public": "dist",
+    "predeploy": [
+      "rm -rf client/dist && cd client && npm run build && cd .."
+    ],
+    "public": "client/dist",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/call",
+        "function": "call"
+      },
+      {
+        "source": "/getAudio/:path*",
+        "function": "getAudio"
+      },
+      {
+        "source": "/transcribe",
+        "function": "transcribe"
+      }
     ]
   },
-  "functions": [
-    {
-      "source": "functions",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log"
-      ],
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run"
-      ],
-      "codebase": "default"
-    }
-  ]
+  "storage": {
+    "rules": "storage/storage.rules",
+    "include": [
+      "storage/storage.js"
+    ]
+  }
 }
