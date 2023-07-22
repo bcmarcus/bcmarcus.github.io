@@ -14,16 +14,32 @@
     ],
     "rewrites": [
       {
-        "source": "/call",
-        "function": "call"
+        "source": "/date",
+        "run": {
+          "serviceId": "call-to-action",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/answerCall",
+        "run": {
+          "serviceId": "call-to-action",
+          "region": "us-central1"
+        }
       },
       {
         "source": "/getAudio/:path*",
-        "function": "getAudio"
+        "run": {
+          "serviceId": "call-to-action",
+          "region": "us-central1"
+        }
       },
       {
-        "source": "/transcribe",
-        "function": "transcribe"
+        "source": "/callLoop",
+        "run": {
+          "serviceId": "call-to-action",
+          "region": "us-central1"
+        }
       }
     ]
   },

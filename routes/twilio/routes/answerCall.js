@@ -1,17 +1,15 @@
 //answerCall.js
 const express = require('express');
 const router = express.Router();
-const { generateAiVoiceMessage } = require ("../../utils/elevenLabs")
 const VoiceResponse = require('twilio').twiml.VoiceResponse;
 
 function callAndResponse (AIvoiceMessageUrl, res) {
   const twiml = new VoiceResponse();
   twiml.play({}, AIvoiceMessageUrl);
-  twiml.pause({ length: 1 });
   twiml.record({ 
     action: `${global.domain}/callLoop`,
     maxLength: 20,
-    timeout: 1,
+    timeout: 2,
     playBeep: false
   });
 
@@ -24,7 +22,7 @@ router.post('/', async (req, res) => {
   const filePath = "default/hello.mp3";
   const AIvoiceMessageUrl = `${global.domain}/getAudio/${filePath}`
   // const AIvoiceMessageUrl = await generateAiVoiceMessage(introText, filePath);
-  console.log (AIvoiceMessageUrl);
+  await logWarning (AIvoiceMessageUrl);
   callAndResponse (AIvoiceMessageUrl, res);
 });
 

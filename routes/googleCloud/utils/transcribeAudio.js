@@ -4,15 +4,29 @@ const speech = require('@google-cloud/speech');
 async function transcribeAudio(recordingUrl) {
   // Download the audio file from the recording URL
   var response;
-  try {
-    response = await axios.get(recordingUrl, {
+  let attempts = 2;
+  
+  while(attempts > 0) {
+    try {
+      response = await axios.get(recordingUrl, {
         responseType: 'arraybuffer'
-    });
-  } catch (error) {
-      console.error(error.response.data);
-  }
+      });
 
-  if (response.data == undefined) {
+      // If the request is successful, break out of the loop
+      break;
+    } catch (error) {
+      console.error(error.response.data);
+
+      attempts--;
+
+      // If this was the last attempt, throw the error
+      if (attempts === 0) {
+        throw error;
+      }
+    }
+  }
+  if (response == undefined && response.data == undefined) {
+    await logWarning ("Undefined response in transcribeAudio");
     return "";
   }
   // The audio data is encoded as an ArrayBuffer

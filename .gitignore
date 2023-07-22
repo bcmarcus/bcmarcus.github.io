@@ -1,7 +1,7 @@
 # configs
 functions/config.js
 src/firebaseConfig.js
-config/*
+config/service_keys/*
 
 # dependencies
 /node_modules

@@ -33,7 +33,7 @@ async function askGPT(data) {
       max_tokens: 200,
     });
   } catch (err) {
-    console.log(err.message);
+    await logWarning(err.message);
     throw new Error("Failed to call OpenAI API");
   }
 

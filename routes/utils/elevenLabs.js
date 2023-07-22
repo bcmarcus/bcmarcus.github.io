@@ -24,11 +24,11 @@ async function generateAiVoiceMessage(text, filePath) {
     fs.unlinkSync(audioFilePath);
   }
   
-  console.log("Making the audio file at: ", audioFilePath);
+  await logWarning("Making the audio file at: ", audioFilePath);
 
   try {
     let result = await textToSpeech(apiKey, voiceID, audioFilePath, text, 0.2, 0.7);
-    console.log(`Successfully created audio file at: ${audioFilePath} and the result was ${result.status}`);
+    await logWarning(`Successfully created audio file at: ${audioFilePath} and the result was ${result.status}`);
   } catch (error) {
     console.error(`Failed to create audio file at: ${audioFilePath}`, error.message);
   }
@@ -47,7 +47,7 @@ async function textToSpeech (apiKey, voiceID, fileName, textInput, stability, si
 	try {
 
 		if (!apiKey || !voiceID || !fileName || !textInput) {
-			console.log('ERR: Missing parameter');
+			await logWarning('ERR: Missing parameter');
 		}
 
 		const voiceURL = `${config.prod.googleSecrets.elevenLabs.api}/text-to-speech/${voiceID}`;
@@ -88,7 +88,7 @@ async function textToSpeech (apiKey, voiceID, fileName, textInput, stability, si
 
 
 	} catch (error) {
-		console.log(error.message);
+		await logWarning(error.message);
 	}
 };
 

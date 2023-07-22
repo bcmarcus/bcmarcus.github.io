@@ -8,7 +8,6 @@ const config = require("../../config/config.js");
 const axios = require('axios');
 const speech = require('@google-cloud/speech');
 const twilio = require('twilio');
-const domain = "https://d1c2-152-44-212-248.ngrok.io";
 const fs = require('fs');
 
 process.env.GOOGLE_APPLICATION_CREDENTIALS = "../service_keys/call-to-action-2afc3-82ae4cc2b811.json";
@@ -53,7 +52,7 @@ function callAndResponse (AIvoiceMessageUrl, res) {
   twiml.play({}, AIvoiceMessageUrl);
   twiml.pause({ length: 1 });
   twiml.record({ 
-    action: `${domain}/callLoop`,
+    action: `${global.domain}/callLoop`,
     maxLength: 20,
     timeout: 1,
     playBeep: false
@@ -68,7 +67,7 @@ async function callAndResponseOverride (AIvoiceMessageUrl, req) {
   twiml.play({}, AIvoiceMessageUrl);
   twiml.pause({ length: 1 });
   twiml.record({ 
-    action: `${domain}/callLoop`,
+    action: `${global.domain}/callLoop`,
     maxLength: 20,
     timeout: 1,
     playBeep: false
@@ -176,7 +175,7 @@ async function generateAiVoiceMessage(text) {
 
   await textToSpeech(apiKey, voiceID, audioFilePath, text, 0.2, 0.7);
 
-  const AIvoiceMessageUrl = `${domain}/${path.relative(__dirname, audioFilePath)}`
+  const AIvoiceMessageUrl = `${global.domain}/${path.relative(__dirname, audioFilePath)}`
 
   // Assuming audioData is a URL to an audio file
   return AIvoiceMessageUrl;

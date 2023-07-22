@@ -15,7 +15,7 @@ router.get('/date', async (req, res) => {
       time: dateTime.toLocaleTimeString(),
     };
 
-    console.log (payload);
+    await logWarning (payload);
     res.json(payload); 
   } catch (error) {
     console.error("Error occurred:", error.message);

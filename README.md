@@ -132,6 +132,10 @@ $GCP_KEY_PATH is an environment variable set on your local machine that points t
 ｀export GCP_KEY_PATH=~/keys/project-key.json｀
 ｀docker-compose -f docker-compose.yml -f docker-compose.access.yml up｀
 
+When docker is running, use `docker stop $(docker ps -aq)` to kill it.
+
+Unless specified, files in .gitignore will be ignored in the gcloud run as well.
+
 ### 1.6 Final Checks
 Ran npm install
 Changed /src/firebaseConfig.js
