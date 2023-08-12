@@ -15,10 +15,10 @@ router.get('/date', async (req, res) => {
       time: dateTime.toLocaleTimeString(),
     };
 
-    await logWarning (payload);
+    await logDebug (payload);
     res.json(payload); 
   } catch (error) {
-    console.error("Error occurred:", error.message);
+    await logWarning ("Error occurred:", error.message);
     res.status(500).send('An internal error occurred.');
   }
 });

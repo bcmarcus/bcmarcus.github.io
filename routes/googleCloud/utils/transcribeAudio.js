@@ -1,36 +1,39 @@
 const axios = require('axios');
 const speech = require('@google-cloud/speech');
 
-async function transcribeAudio(recordingUrl) {
+async function transcribeAudio(callSid, recordingSid, recordingUrl) {
   // Download the audio file from the recording URL
-  var response;
-  let attempts = 2;
-  
+  let attempts = 1;
+  var base64Audio;
+
+  const twilioClient = global.twilioClient;
+
   while(attempts > 0) {
     try {
-      response = await axios.get(recordingUrl, {
-        responseType: 'arraybuffer'
-      });
+      // const finishedRecording = await twilioClient.calls(callSid).recordings(recordingSid).update({status: 'stopped'});
+      
+      const recording = await twilioClient.calls(callSid).recordings(recordingSid).fetch();
 
-      // If the request is successful, break out of the loop
-      break;
+      // console.log (recording.uri.replace('.json', '.mp3'));
+      // const response = await axios.get("https://api.twilio.com" + recording.uri.replace('.json', '.mp3'), { responseType: 'stream' });
+  
+      const response = await axios.get(recordingUrl, { responseType: 'stream' });
+
+      const getStream = await import('get-stream');
+      const audioBytes = await getStream.default.buffer(response.data);
+      const base64Audio = audioBytes.toString('base64');
+  
+      // console.log('Base64 Audio:', base64Audio);
     } catch (error) {
-      console.error(error.response.data);
-
       attempts--;
-
-      // If this was the last attempt, throw the error
-      if (attempts === 0) {
-        throw error;
-      }
+      await logWarning(error);
     }
   }
-  if (response == undefined && response.data == undefined) {
+  if (response == undefined || response.data == undefined || base64Audio == undefined) {
     await logWarning ("Undefined response in transcribeAudio");
     return "";
   }
   // The audio data is encoded as an ArrayBuffer
-  const audioBytes = response.data.toString('base64');
 
   const speechClient = new speech.SpeechClient();
 
@@ -41,7 +44,7 @@ async function transcribeAudio(recordingUrl) {
   };
 
   const audio = {
-    content: audioBytes,
+    content: base64Audio,
   };
 
   const request = {

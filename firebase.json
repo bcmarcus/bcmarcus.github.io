@@ -35,7 +35,21 @@
         }
       },
       {
-        "source": "/callLoop",
+        "source": "/callLoopAccurate",
+        "run": {
+          "serviceId": "call-to-action",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/callLoopFast",
+        "run": {
+          "serviceId": "call-to-action",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/callLoopVeryFast",
         "run": {
           "serviceId": "call-to-action",
           "region": "us-central1"

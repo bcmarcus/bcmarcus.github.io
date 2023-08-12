@@ -12,6 +12,7 @@ config/service_keys/*
 # testing
 /coverage
 /functions/tests
+.wav
 
 # production
 /dist

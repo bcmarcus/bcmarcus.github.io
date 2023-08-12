@@ -1,8 +1,8 @@
 exports.dev =
 {
   app: {
-    port: 3000,
-    domain: "localhost",
+    port: 8080,
+    domain: "https://99f9-152-44-212-248.ngrok.io",
   },
 };
 
@@ -12,7 +12,6 @@ exports.prod =
     port: 3000,
     name: "Website Name",
     domains: [ // add as many as you want
-      "https://d89b-152-44-212-248.ngrok.io",
       "https://call-to-action-2afc3.web.app",
       "https://call-to-action-2afc3.firebaseapp.com"
     ]  

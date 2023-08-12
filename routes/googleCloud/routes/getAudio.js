@@ -16,7 +16,7 @@ async function getFile(filePath) {
     filePath = filePath.substring('getAudio/'.length);
   }
 
-  await logWarning("Getting audio at: ", filePath);
+  await logDebug("Getting audio at: ", filePath);
 
   return bucket.file(filePath);
 }
@@ -25,7 +25,7 @@ router.get('/:filepath*', async (req, res) => { // added :filepath*
   const filePath = req.params.filepath + req.params[0]; // added params[0] for multi-level path
 
   if (filePath === undefined) {
-    await logWarning('Invalid storage file path: ', filePath);
+    await logDebug('Invalid storage file path: ', filePath);
     res.status(400).send('Invalid file path');
     return;
   }
@@ -36,7 +36,7 @@ router.get('/:filepath*', async (req, res) => { // added :filepath*
   file.exists().then(async (data) => {
     const exists = data[0];
     if(!exists){
-      await logWarning('File does not exist');
+      await logDebug('File does not exist');
       res.status(404).send('Not Found');
       return;
     } 
@@ -44,19 +44,19 @@ router.get('/:filepath*', async (req, res) => { // added :filepath*
       // Set the appropriate content type based on the file extension
       const contentType = await getContentType(filePath);
       res.set('Content-Type', contentType);
-      await logWarning(contentType);
+      await logDebug(contentType);
 
       // Stream the file content to the response
       file.createReadStream()
       .on('error', async function(err) {
-        await logWarning('Error reading file', err);
+        await logDebug('Error reading file', err);
         res.status(500).send('Server Error');
       })
       .pipe(res);
     }
   })
   .catch(async (error) => {
-    await logWarning('Error checking if file exists', error.message);
+    await logDebug('Error checking if file exists', error.message);
     res.status(500).send('Server Error');
   });
 });

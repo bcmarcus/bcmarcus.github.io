@@ -12,7 +12,7 @@ const axios = require('axios');
 const os = require('os');
 const fs = require('fs');
 
-process.env.GOOGLE_APPLICATION_CREDENTIALS = "../service_keys/call-to-action-2afc3-82ae4cc2b811.json";
+process.env.GOOGLE_APPLICATION_CREDENTIALS = "../../config/service_keys/call-to-action-2afc3-82ae4cc2b811.json";
 
 const secrets = new SecretManagerServiceClient();
 const domain = config.prod.app.domains[0];
@@ -129,25 +129,25 @@ async function reset() {
   const helloURL = await generateAiVoiceMessage(helloText, helloFilePath);
   console.log("Hello message set at url:", helloURL, "\n");
 
-  const thinking1Text = "Working on that.";
-  const thinking1FilePath = "default/thinking1.mp3";
-  const thinking1URL = await generateAiVoiceMessage(thinking1Text, thinking1FilePath);
-  console.log("Thinking1 message set at url:", thinking1URL, "\n");
+  // const thinking1Text = "Working on that.";
+  // const thinking1FilePath = "default/thinking1.mp3";
+  // const thinking1URL = await generateAiVoiceMessage(thinking1Text, thinking1FilePath);
+  // console.log("Thinking1 message set at url:", thinking1URL, "\n");
 
-  const thinking2Text = "Thinking...";
-  const thinking2FilePath = "default/thinking2.mp3";
-  const thinking2URL = await generateAiVoiceMessage(thinking2Text, thinking2FilePath);
-  console.log("Thinking2 message set at url:", thinking2URL, "\n");
+  // const thinking2Text = "Thinking...";
+  // const thinking2FilePath = "default/thinking2.mp3";
+  // const thinking2URL = await generateAiVoiceMessage(thinking2Text, thinking2FilePath);
+  // console.log("Thinking2 message set at url:", thinking2URL, "\n");
 
-  const goodbyeText = "Goodbye!";
-  const goodbyeFilePath = "default/goodbye.mp3";
-  const goodbyeURL = await generateAiVoiceMessage(goodbyeText, goodbyeFilePath);
-  console.log("Goodbye message set at url:", goodbyeURL, "\n");
+  // const goodbyeText = "Goodbye!";
+  // const goodbyeFilePath = "default/goodbye.mp3";
+  // const goodbyeURL = await generateAiVoiceMessage(goodbyeText, goodbyeFilePath);
+  // console.log("Goodbye message set at url:", goodbyeURL, "\n");
 
-  const tryAgainLaterText = "I'm sorry, let me get back to you on that.";
-  const tryAgainLaterFilePath = "default/tryAgainLater.mp3";
-  const tryAgainLaterURL = await generateAiVoiceMessage(tryAgainLaterText, tryAgainLaterFilePath);
-  console.log("Try again later message set at url:", tryAgainLaterURL, "\n");
+  // const tryAgainLaterText = "I'm sorry, let me get back to you on that.";
+  // const tryAgainLaterFilePath = "default/tryAgainLater.mp3";
+  // const tryAgainLaterURL = await generateAiVoiceMessage(tryAgainLaterText, tryAgainLaterFilePath);
+  // console.log("Try again later message set at url:", tryAgainLaterURL, "\n");
 }
 
 function delay(ms) {

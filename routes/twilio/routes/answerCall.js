@@ -2,28 +2,27 @@
 const express = require('express');
 const router = express.Router();
 const VoiceResponse = require('twilio').twiml.VoiceResponse;
-
-function callAndResponse (AIvoiceMessageUrl, res) {
-  const twiml = new VoiceResponse();
-  twiml.play({}, AIvoiceMessageUrl);
-  twiml.record({ 
-    action: `${global.domain}/callLoop`,
-    maxLength: 20,
-    timeout: 2,
-    playBeep: false
-  });
-
-  res.writeHead(200, {'Content-Type': 'text/xml'});
-  res.end(twiml.toString());
-}
+const twilio = require('twilio');
+const config = require("../../../config/config.js");
 
 router.post('/', async (req, res) => {
-  // const introText = "Hello, how can I be of assistance?";
+  const twiml = new VoiceResponse();
   const filePath = "default/hello.mp3";
-  const AIvoiceMessageUrl = `${global.domain}/getAudio/${filePath}`
-  // const AIvoiceMessageUrl = await generateAiVoiceMessage(introText, filePath);
-  await logWarning (AIvoiceMessageUrl);
-  callAndResponse (AIvoiceMessageUrl, res);
+  const AIvoiceMessageUrl = `${global.storageDomain}/getAudio/${filePath}`
+  // Use <Gather> verb to gather speech input
+  const gather = twiml.gather({
+    input: 'speech',
+    action: '/callLoopVeryFast',
+    speechModel: "experimental_conversations",
+    speechTimeout: "auto"
+  });
+
+  gather.play (AIvoiceMessageUrl);
+  gather.pause({ length: 15 });
+  res.type('text/xml');
+  res.send(twiml.toString());
 });
+
+
 
 module.exports = router;

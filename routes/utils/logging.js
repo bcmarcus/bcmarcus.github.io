@@ -1,9 +1,15 @@
 const {Logging} = require('@google-cloud/logging');
 const logging = new Logging();
 const log = logging.log('twilio-auth');
+const util = require('util');
 
-async function logWarning(...args) {
-  const message = args.map(arg => JSON.stringify(arg)).join(', ');
+async function logMessage(severity, ...args) {
+  let message;
+  if (process.env.DEV) {
+    message = args.map(arg => util.inspect(arg, false, null, true)).join('\n');
+  } else {
+    message = args.map(arg => JSON.stringify(arg)).join('');
+  }
 
   const metadata = {
     resource: {
@@ -13,18 +19,32 @@ async function logWarning(...args) {
         project_id: 'my-project'
       }
     },
-    severity: 'WARNING',
+    severity: severity,
   };
 
   const entry = log.entry(metadata, {message: message});
 
   try {
     await log.write(entry);
-    console.log(`Logged: ${entry.data.message}`);
+    if (process.env.DEV) {
+      console.log(`---${severity}---\t`, message, "");
+    }
   } catch (error) {
-    console.error('Error writing log:', error);
+    console.error('Error writing log:', error, "");
   }
 }
 
+async function logWarning(...args) {
+  return logMessage('WARNING', ...args);
+}
 
-module.exports = logWarning;
+async function logDebug(...args) {
+  if (process.env.DEBUG) {
+    return logMessage('DEBUG', ...args);
+  }
+}
+
+module.exports = {
+  logWarning,
+  logDebug
+};
