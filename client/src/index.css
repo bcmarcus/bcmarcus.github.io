@@ -1,3 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .smooth-transition {
+    @apply transition-colors duration-300 transform 
+  }
+}
+
+@layer utilities {
+  .theme-primary {
+    /* Light mode styles */
+    @apply bg-light-primary text-light-accent;
+    
+    /* Dark mode styles */
+    @apply dark:bg-dark-primary dark:text-dark-accent;
+  }
+  .theme-secondary {
+    /* Light mode styles */
+    @apply bg-light-secondary text-light-accent;
+    
+    /* Dark mode styles */
+    @apply dark:bg-dark-secondary dark:text-dark-accent;
+  }
+}
+
+@layer utilities {
+  .hover-theme {
+    /* Light mode styles */
+    @apply hover:cursor-pointer;
+    @apply hover:text-light-secondary hover:bg-light-accent;
+    @apply dark:hover:text-dark-secondary dark:hover:bg-dark-accent;
+  }
+}
+
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',

@@ -3,16 +3,17 @@ const axios = require('axios');
 const WebSocket = require('ws');
 const express = require('express');
 const ffmpeg = require('fluent-ffmpeg');
-const getSecret = require('../../security/secrets.js');
+const getSecret = require('../../routes/security/secrets.js');
+const { logDebug } = require('../../routes/utils/logging.js');
 
 const app = express();
 const server = require('http').createServer(app);
 const wss = new WebSocket.Server({ server });
 
-process.env.GOOGLE_APPLICATION_CREDENTIALS = "../../../config/service_keys/call-to-action-2afc3-82ae4cc2b811.json";
+process.env.GOOGLE_APPLICATION_CREDENTIALS = "../../config/service_keys/call-to-action-2afc3-82ae4cc2b811.json";
 
 const voiceID = '21m00Tcm4TlvDq8ikWAM';
-const streamingLatency = 0;
+const streamingLatency = 4;
 const message = "Hello, how can I be of assistance?";
 const modelId = "eleven_monolingual_v1";
 const voiceSettings =  {
@@ -36,7 +37,7 @@ wss.on('connection', ws => {
       case 'start':
         twilioStreamSid = msg.streamSid; // Capture the StreamSid
         console.log(`Starting Media Stream ${twilioStreamSid}`);
-        makeElevenLabsRequest(ws, msg.streamSid);
+        await makeElevenLabsRequest(ws, msg.streamSid);
         break;
       case 'stop':
         console.log(`Stopping Media Stream`);
@@ -48,11 +49,13 @@ wss.on('connection', ws => {
 async function makeElevenLabsRequest(ws, twilioStreamSid) {
   const xiApiKey = await getSecret('elevenLabs');
 
+  console.log(process.env.DEBUG);
+  logDebug("Start Eleven Labs");
   const params = {
     optimize_streaming_latency: streamingLatency,
   };
   const data = {
-    text: message,
+    text: "This is a long test string to see if there is something slower with long strings. If there is not an issue with it, then I will not need to change anything. Otherwise, I will need to change the streaming latency.",
     model_id: modelId,
     voice_settings: voiceSettings
   };
@@ -69,9 +72,24 @@ async function makeElevenLabsRequest(ws, twilioStreamSid) {
       responseType: 'stream'
     })
 
+    logDebug("End Eleven Labs");
+
+    logDebug("Start Eleven Labs 2");
+    response = await axios({
+      method: 'post',
+      url: `https://api.elevenlabs.io/v1/text-to-speech/${voiceID}/stream`,
+      params: params,
+      data: data,
+      headers: {
+        "xi-api-key": xiApiKey
+      },
+      responseType: 'stream'
+    })
+    logDebug("End Eleven Labs2");
+
     // console.log('Content-Type:', response.data);
-    console.log('Content-Type:', response.headers['content-type']);
-    console.log('Audio stream received from ElevenLabs.');
+    // console.log('Content-Type:', response.headers['content-type']);
+    // console.log('Audio stream received from ElevenLabs.');
 
     //mpeg at 44100
 
@@ -103,7 +121,7 @@ async function makeElevenLabsRequest(ws, twilioStreamSid) {
       };
     
       // Convert the JSON object to a string
-      console.log(twilioMessage);
+      // console.log(twilioMessage);
 
       const twilioMessageString = JSON.stringify(twilioMessage);
       ws.send(twilioMessageString);
@@ -121,7 +139,6 @@ app.post('/', (req, res) => {
       <Connect>
         <Stream url="wss://${req.headers.host}/"/>
       </Connect>
-      <Say>Testing</Say>
     </Response>
   `);
 });

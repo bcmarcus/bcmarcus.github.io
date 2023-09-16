@@ -230,12 +230,3 @@ Promise.all([getSecret('twilio'), getSecret('twilio', 'sid'), getSecret("openAI"
     return;
   }
 );
-
-
-/*
-Twilio: 0ms basically
-ElevenLabs: 800ms just to get the stream
-GPT: 
-Google TTS: 50ms or something crazy like that
-
-*/

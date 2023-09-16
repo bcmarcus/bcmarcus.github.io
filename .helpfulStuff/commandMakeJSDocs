@@ -1,0 +1,22 @@
+Write out the jsdocs for the file below. Do write anything besides the jsdoc. Do not write jsdocs for the requires. Ensure that the jsdocs have two spaces before each line. 
+
+An example is shown here:
+Input:
+async function logDev(...args) {
+  if (process.env.DEV) {
+    return await logMessage('DEV', ...args);
+  }
+}
+
+Output:
+/**
+  * Logs a message with a specified severity.
+  * In development, it logs to the console. In production, it logs to Google Cloud Logging.
+  * @async
+  * @function logMessage
+  * @param {string} severity - The severity of the log message.
+  * @param {...*} args - The arguments to be logged.
+  * @throws {Error} If an error occurs while writing the log.
+  */
+
+The actual file to add jsdocs for is below:

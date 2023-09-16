@@ -1,72 +1,146 @@
-const admin = require('firebase-admin');
-const fs = require('fs');
-const port = process.env.PORT || 8080;
-const config = require("./config/config.js");
+// -- System Modules -- //
+const fs = require ('fs');
+const http = require ('http');
 
+// -- Firebase and Security -- //
+const admin = require ('firebase-admin');
+const config = require ('./config/config.js');
 
 if (process.env.DEV) {
   // Get the file path from the environment variable
   const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
   // Read the file and parse it into an object
-  const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
+  const serviceAccount = JSON.parse (fs.readFileSync (serviceAccountPath, 'utf8'));
 
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
+  admin.initializeApp ({
+    credential: admin.credential.cert (serviceAccount),
   });
 
   global.domain = config.dev.app.domain;
 } else {
   global.domain = config.prod.app.domains[0];
-  admin.initializeApp();
+  admin.initializeApp ();
 }
 
-// -- GLOBALS -- //
-const googleCloudRouter = require('./routes/googleCloud/googleCloudRouter');
-const twilioRouter = require('./routes/twilio/twilioRouter');
-const date = require('./routes/utils/date');
-const createTwilioClient = require('./routes/twilio/utils/twilioClient');
-const { logDebug, logWarning } = require('./routes/utils/logging');
-const getSecret = require('./routes/security/secrets.js');
+// -- NPM Modules -- //
+const express = require ('express');
 
+// -- Custom Modules -- //
+const { createTwilioClient } = require ('./routes/twilio/twilioUtils');
+const getSecret = require ('./routes/security/secrets.js');
+const googleCloudRouter = require ('./routes/googleCloud/googleCloudRouter');
+const { loadLLMFunctions, loadLLMFunctionsMetadata } = require ('./routes/LLM/helpers/load.js');
+const { logDev, logWarning, logError } = require ('./routes/utils/logging');
+const twilioRouter = require ('./routes/twilio/twilioRouter');
+const { handleAnswerCallUpgrade } = require ('./routes/twilio/call/callWSS');
+
+// -- Express app setup -- //
+const app = express ();
+app.use (express.json ()); // for parsing application/json
+app.use (express.urlencoded ({ extended: true })); // for parsing application/x-www-form-urlencoded
+const server = http.createServer (app);
+
+const port = process.env.PORT || 8080;
+
+// -- Globals -- //
 global.storageDomain = config.prod.app.domains[0];
-global.logDebug = logDebug;
-global.logWarning = logWarning;
 
-// This is probably bad form for secrets, but alas
-// -- SECRETS -- //
-Promise.all([getSecret('twilio'), getSecret('twilio', 'sid'), getSecret("openAI"), getSecret('elevenLabs')])
-  .then(([twilioAuth, twilioSID, openAIAuth, elevenLabsAuth]) => {
-    global.twilioAuth = twilioAuth;
-    global.twilioSID = twilioSID;
-    global.openAIAuth = openAIAuth;
-    global.elevenLabsAuth = elevenLabsAuth;
-    
-    const twilioClient = createTwilioClient()
-    global.twilioClient = twilioClient;
+/**
+  * Initializes the server and sets up environment variables, global variables, and server routes.
+  * In development mode, it fetches secrets for various services and checks if they are properly initialized.
+  * It also loads default LLM functions and their metadata, creates a Twilio client, and checks if these globals are properly initialized.
+  * If any environment or global variables are not properly initialized, it logs a warning.
+  * It sets up express to parse JSON and URL-encoded bodies, and sets up routes for Google Cloud and Twilio.
+  * It also sets up a WebSocket upgrade handler for handling calls.
+  * Finally, it starts the server and logs the port it's running on.
+  * @async
+  * @function init
+  * @throws {Error} If an error occurs while initializing the server.
+  */
+async function init () {
+  if (process.env.DEV) {
+    await Promise.all ([
+      getSecret ('bing'),
+      getSecret ('twilio'),
+      getSecret ('twilio', 'sid'),
+      getSecret ('openAI'),
+      getSecret ('elevenLabs'),
+    ]).then (([bingAuth, twilioAuth, twilioSID, openAIAuth, elevenLabsAuth]) => {
+      process.env.bingAuth = bingAuth;
+      process.env.twilioAuth = twilioAuth;
+      process.env.twilioSID = twilioSID;
+      process.env.openAIAuth = openAIAuth;
+      process.env.elevenLabsAuth = elevenLabsAuth;
 
-    // -- EXPRESS -- //
-    const express = require('express');
+      const envKeys = [
+        'bingAuth',
+        'twilioAuth',
+        'twilioSID',
+        'openAIAuth',
+        'elevenLabsAuth',
+      ];
 
-    const app = express();
-    app.use(express.json()); // for parsing application/json
-    app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+      const falsyEnvKeys = envKeys.filter ((key) => !process.env[key]);
 
-    // add "/route" as first param if needed
-    app.use(googleCloudRouter);
-    app.use(twilioRouter);
-    app.use(date);
-
-    app.listen(port, async () => {
-      await logDebug(`Server is running on port ${port}`);
+      if (falsyEnvKeys.length > 0) {
+        logWarning (`Env variables not properly initialized: ${falsyEnvKeys}`).then ();
+        return;
+      }
     });
-    // -- EXPRESS -- //
-  })
-  .catch(error => {
-    logWarning('Error:', error.message).then(() => {console.log(error.message)});
-    return;
+  }
+
+
+  await Promise.all (
+      [
+        loadLLMFunctions ('./routes/LLM//default'),
+      ])
+      .then (async (
+          [
+            defaultLLMFunctions,
+          ]) => {
+        global.defaultLLMFunctions = defaultLLMFunctions;
+        global.defaultLLMFunctionMetadata = await loadLLMFunctionsMetadata (global.defaultLLMFunctions);
+        const twilioClient = createTwilioClient ();
+        global.twilioClient = twilioClient;
+
+        const globalKeys = [
+          'defaultLLMFunctions',
+          'defaultLLMFunctionMetadata',
+          'twilioClient',
+        ];
+
+        const falsyGlobalKeys = globalKeys.filter ((key) => !global[key]);
+        if (falsyGlobalKeys.length > 0) {
+          logWarning (`Env variables not properly initialized: ${falsyGlobalKeys}`);
+          return;
+        }
+      })
+      .catch ((error) => {
+        logError (`Server js error`, error).then ();
+        return;
+      });
+
+  // -- EXPRESS -- //
+  app.use (express.json ()); // for parsing application/json
+  app.use (express.urlencoded ({ extended: true })); // for parsing application/x-www-form-urlencoded
+
+  // add "/route" as first param if needed
+  app.use (googleCloudRouter);
+  app.use (twilioRouter);
+
+  server.on ('upgrade', (request, twilioWS, head) => {
+    if (request.url === '/call') {
+      handleAnswerCallUpgrade (request, twilioWS, head);
+    } else {
+      logWarning (`Request URL not found: ${request.url}`);
+      twilioWS.destroy ();
+    }
   });
 
-// -- SECRETS -- //
+  server.listen (port, async () => {
+    logDev (`Server is running on port ${port}`);
+  });
+}
 
-// -- GLOBALS -- //
+init ();

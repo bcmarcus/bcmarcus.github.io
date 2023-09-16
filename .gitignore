@@ -12,6 +12,8 @@ config/service_keys/*
 # testing
 /coverage
 /functions/tests
+/dep
+/dev
 .wav
 
 # production

@@ -1,9 +1,9 @@
 rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /{allPaths=**} {
-      allow read: if false;
-      allow write: if false;
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Matches any document in the 'users' collection with an ID equal to the user's UUID
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }
