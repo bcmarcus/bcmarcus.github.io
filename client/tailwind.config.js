@@ -1,8 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   mode: 'jit',
-  purge: {
-    content: ['./src/**/*.{js,jsx,ts,tsx,html}'],
+  content: {
+    files: ['./src/**/*.{js,jsx,ts,tsx,html}'],
     options: {
       safelist: ['bg-dark', 'text-dark-accent', 'hover:text-dark', 'hover:bg-dark-accent',
         'bg-light', 'text-light-accent', 'hover:text-light', 'hover:bg-light-accent'],
@@ -29,4 +29,3 @@ module.exports = {
   },
   plugins: [],
 };
-
