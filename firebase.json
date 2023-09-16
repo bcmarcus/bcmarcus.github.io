@@ -11,6 +11,29 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/date",
+        "run": {
+          "serviceId": "call-to-action",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/answerCall",
+        "run": {
+          "serviceId": "call-to-action",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/getAudio/:path*",
+        "run": {
+          "serviceId": "call-to-action",
+          "region": "us-central1"
+        }
+      }
     ]
   },
   "storage": {
