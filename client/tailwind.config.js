@@ -1,13 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  mode: 'jit',
-  content: {
-    files: ['./src/**/*.{js,jsx,ts,tsx,html}'],
-    options: {
-      safelist: ['bg-dark', 'text-dark-accent', 'hover:text-dark', 'hover:bg-dark-accent',
+  content:  ['./src/**/*.{js,jsx,ts,tsx,html}'],
+  safelist: ['bg-dark', 'text-dark-accent', 'hover:text-dark', 'hover:bg-dark-accent',
         'bg-light', 'text-light-accent', 'hover:text-light', 'hover:bg-light-accent'],
-    },
-  },
+ 
   darkMode: 'class',
   theme: {
     extend: {
@@ -16,7 +12,7 @@ module.exports = {
         'dark-primary': '#222222',
         'light-secondary': '#EEEEEE',
         'dark-secondary': '#111111',
-        'light-accent': '#007BFF',
+        'light-accent': '#005BFF',
         'dark-accent': '#ef8010',
       },
     },

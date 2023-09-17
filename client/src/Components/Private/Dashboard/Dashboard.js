@@ -3,9 +3,9 @@ import { getIdToken, onAuthStateChanged } from 'firebase/auth';
 import { useAuth, useFirestore } from '/src/Providers/Firebase';
 import { useNavigate, Link } from 'react-router-dom';
 import DashboardHome from './DashboardHome';
-import Account from './AccountSettingsTab';
-import logo from '/src/Assets/Logo/logo-placeholder-image.png';
-import '/src/Assets/Dashboard/Dashboard.css';
+import AccountSettingsTab from './AccountSettingsTab';
+import logo from '/src/Assets/Public/Logo/logo-placeholder-image.png';
+import '/src/Assets/Private/Dashboard/Dashboard.css';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState ('dashboard');
@@ -51,49 +51,48 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
+    <div className="theme-primary flex h-screen">
       <div id="navigationDiv">
         <nav id="navigation">
-          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
+          <div className="flex flex-col h-full justify-between">
             <div>
               <Link to="/">
-                <button className="dashboard-logo" style={{ marginBottom: '1rem' }}>
-                  <img src={logo} alt="Logo" style={{ width: '100px', cursor: 'pointer' }} />
+                <button className="dashboard-logo mb-4">
+                  <img src={logo} alt="Logo" className="w-24 cursor-pointer" />
                 </button>
               </Link>
-              <ul style={{ listStyleType: 'none', padding: 0 }}>
+              <ul className="list-none p-0">
                 <li>
                   <button className="tab" onClick={() => setActiveTab ('dashboard')}>
-                    Dashboard
-                    <span className="material-icons" style={{ marginLeft: '10px' }}>dashboard</span>
+                Dashboard
+                    <span className="material-icons ml-2">dashboard</span>
                   </button>
                 </li>
               </ul>
             </div>
             <div>
-              <ul style={{ listStyleType: 'none', padding: 0, marginBottom: 0 }}>
+              <ul className="list-none p-0 mb-0">
                 <li>
-                  <button className="tab" onClick={() => setActiveTab ('account')}>
-                    Settings
-                    <span className="material-icons" style={{ marginLeft: '10px' }}>settings</span>
+                  <button className="tab" onClick={() => setActiveTab ('accountSettingsTab')}>
+                Settings
+                    <span className="material-icons ml-2">settings</span>
                   </button>
                 </li>
               </ul>
               <button className="tab" onClick={handleLogout}>
-                Logout
-                <span className="material-icons" style={{ marginLeft: '10px' }}>logout</span>
+            Logout
+                <span className="material-icons ml-2">logout</span>
               </button>
             </div>
           </div>
         </nav>
       </div>
-      <main style={{ flex: 1, padding: '1rem' }}>
+      <main className="flex-grow p-4">
         {activeTab === 'dashboard' && <DashboardHome />}
-        {activeTab === 'ingredients' && <Ingredients />}
-        {activeTab === 'instructions' && <Instructions />}
-        {activeTab === 'account' && <Account />}
+        {activeTab === 'accountSettingsTab' && <AccountSettingsTab />}
       </main>
     </div>
+
   );
 };
 

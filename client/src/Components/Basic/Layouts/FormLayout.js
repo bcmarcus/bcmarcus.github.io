@@ -1,7 +1,7 @@
 // FormLayout.js
 import React from 'react';
-import '/src/Assets/Login/login.css';
-import '/src/Assets/Layouts/singlePageLayout.css';
+import '/src/Assets/Public/Login/login.css';
+import '/src/Assets/Public/Layouts/singlePageLayout.css';
 import Header from '../../Basic/Header/Header';
 
 const FormLayout = ({ children }) => {

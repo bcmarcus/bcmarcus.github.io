@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth, useFirestore } from '/src/Providers/Firebase';
 import { useNavigate } from 'react-router-dom';
-import '/src/Assets/Dashboard/Dashboard.css';
+import '/src/Assets/Private/Dashboard/Dashboard.css';
 
 import AddressField from '../../Basic/Forms/AddressField';
 import Card from '../../Basic/Card';

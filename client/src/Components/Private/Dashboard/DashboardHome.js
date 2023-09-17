@@ -1,6 +1,6 @@
 import React from 'react';
 
-import '/src/Assets/Dashboard/DashboardHome.css';
+import '/src/Assets/Private/Dashboard/DashboardHome.css';
 
 function DashboardHome() {
 

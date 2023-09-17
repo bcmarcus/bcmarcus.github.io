@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '/src/Providers/Theme';
-import logo from '/src/Assets/Logo/logo-placeholder-image.png';
+import logo from '/src/Assets/Public/Logo/logo-placeholder-image.png';
 import HeaderLink from './HeaderLink';
 
 const MOBILE_VIEW_MAX_WIDTH = 768; // Maximum screen size for mobile view

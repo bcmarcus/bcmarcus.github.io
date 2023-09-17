@@ -1,6 +1,6 @@
 // src/components/HeaderComponent/index.jsx
 import React from 'react';
-import '/src/Assets/Layouts/singlePageLayout.css';
+import '/src/Assets/Public/Layouts/singlePageLayout.css';
 import Header from '../../Basic/Header/Header';
 
 const BaseLayout = ({ children }) => {

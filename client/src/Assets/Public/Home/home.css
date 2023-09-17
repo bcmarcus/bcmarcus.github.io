@@ -1,0 +1,3 @@
+.home-title {
+  @apply text-center text-4xl font-bold mt-12;
+}

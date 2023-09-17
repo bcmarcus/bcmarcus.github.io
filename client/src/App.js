@@ -12,8 +12,8 @@ import Register from './Components/Security/Auth/Register';
 import Home from './Components/Public/Home/Home';
 import PasswordReset from './Components/Security/Auth/PasswordReset';
 import ProtectedRoute from './Components/Security/Routing/ProtectedRoute';
-import Loading from './Components/Security/Routing/Loading';
 
+import Disclaimer from './Components/Public/Legal/Disclaimer';
 import SMSTermsAndConditions from './Components/Public/Legal/SMSTermsAndConditions';
 import DataProcessingAgreement from './Components/Public/Legal/DataProcessingAgreement';
 import TermsAndConditions from './Components/Public/Legal/TermsAndConditions';
@@ -53,6 +53,7 @@ const App = () => {
             <Route path="/password-reset" element={<PasswordReset />} />
             <Route path="/legal/sms-terms-and-conditions" element={<SMSTermsAndConditions />} />
             <Route path="/legal/dpa" element={<DataProcessingAgreement />} />
+            <Route path="/legal/disclaimer" element={<Disclaimer />} />
             <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/legal/terms-and-conditions" element={<TermsAndConditions />} />
             <Route element={<ProtectedRoute />}>

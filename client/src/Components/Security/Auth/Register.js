@@ -4,9 +4,9 @@ import { useNavigate, Link } from 'react-router-dom';
 import PasswordInput from '../../Basic/Forms/PasswordInput';
 import EmailInput from '../../Basic/Forms/EmailInput';
 import BaseLayout from '../../Basic/Layouts/BaseLayout';
-import googleLogo from '/src/Assets/External/googleLogo.png';
-import appleLogo from '/src/Assets/External/appleLogo.png';
-import '/src/Assets/Login/login.css';
+import googleLogo from '/src/Assets/Public/External/googleLogo.png';
+import appleLogo from '/src/Assets/Public/External/appleLogo.png';
+import '/src/Assets/Public/Login/login.css';
 
 const Register = () => {
   const [email, setEmail] = useState ('');

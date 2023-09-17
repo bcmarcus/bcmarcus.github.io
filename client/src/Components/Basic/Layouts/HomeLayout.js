@@ -1,10 +1,11 @@
 import React from 'react';
 import Header from '../Header/Header';
-import '/src/Assets/Layouts/homePageLayout.css';
+import '/src/Assets/Public/Layouts/homePageLayout.css';
 
 const HomeLayout = ({ children }) => {
   const links = [
     { title: 'About', url: '/about' },
+    { title: 'Disclaimer', url: '/legal/disclaimer' },
     { title: 'Privacy Policy', url: '/legal/privacy-policy' },
     { title: 'SMS Terms and Conditions', url: '/legal/sms-terms-and-conditions' },
     { title: 'Terms and Conditions', url: '/legal/terms-and-conditions' },

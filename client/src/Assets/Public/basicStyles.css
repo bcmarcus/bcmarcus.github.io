@@ -1,0 +1,39 @@
+.title {
+    @apply text-center text-5xl font-bold mt-12;
+}
+
+.subtitle {
+    @apply text-center text-2xl my-6;
+}
+
+.h1-heading {
+    @apply mt-24 mb-4 text-3xl;
+}
+
+.h2-heading {
+    @apply mt-24 text-2xl;
+}
+
+.h3-heading {
+    @apply mt-4 text-xl font-bold;
+}
+
+.h4-heading {
+    @apply mt-4 text-lg font-bold;
+}
+
+.paragraph {
+    @apply ml-6 mb-6 text-xl;
+}
+
+.list {
+    @apply ml-6 mb-6 text-xl list-disc;
+}
+
+.list-element {
+    @apply ml-6 mb-2 text-xl;
+}
+
+.tab {
+    @apply ml-6;
+}
