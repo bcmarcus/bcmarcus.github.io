@@ -2,12 +2,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '/src/Providers/Firebase';
-import PasswordInput from '../../Basic/Forms/PasswordInput';
-import EmailInput from '../../Basic/Forms/EmailInput';
 import FormLayout from '../../Basic/Layouts/FormLayout';
 import googleLogo from '/src/Assets/Public/External/googleLogo.png';
 import appleLogo from '/src/Assets/Public/External/appleLogo.png';
 import '/src/Assets/Public/Login/login.css';
+import InputField from '../../Basic/Forms/InputField';
 
 const Login = () => {
   const [email, setEmail] = useState ('');
@@ -81,10 +80,25 @@ const Login = () => {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit}>
-            <EmailInput value={email} onChange={(e) => setEmail (e.target.value)} />
-            <PasswordInput value={password} onChange={(e) => setPassword (e.target.value)} />
-            <button type="submit">Sign in</button>
+          <form onSubmit={handleSubmit} className="flex flex-col items-start mt-5">
+            <form className="flex flex-col items-start mt-5">
+              <InputField
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail (e.target.value)}
+                className="mb-2 box-border p-2 border-gray-300 w-full text-lg"
+              />
+              <InputField
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword (e.target.value)}
+                className="mb-2 box-border p-2 border-gray-300 w-full text-lg"
+              />
+              <button type="submit" className="bg-blue-500 text-white p-2 border-none rounded-md w-full font-bold cursor-pointer mt-0 hover:bg-blue-700">Sign in</button>
+            </form>
+
 
             {/* Add a "Forgot password?" button */}
             {error && (

@@ -9,7 +9,7 @@ import Checkbox from '../../Basic/Forms/Checkbox';
 import InputField from '../../Basic/Forms/InputField';
 import FormLayout from '../../Basic/Layouts/FormLayout';
 
-import { validateFirstName, validateLastName, validatePhoneNumber } from '../../Security/FirestoreValidation';
+import { validateFirstName, validateLastName, validatePhoneNumber } from '../../Security/InputValidation';
 
 const AccountSetup = () => {
   const { user } = useAuth ();
@@ -58,10 +58,10 @@ const AccountSetup = () => {
           <Card title="Personal Info">
             <div className='flex flex-col border rounded p-4 mb-4'>
               <div className="flex">
-                <InputField type="text" name="firstName" id="firstName" autoComplete="given-name" label="First Name"/>
-                <InputField type="text" name="lastName" id="lastName" autoComplete="family-name" label="Last Name"/>
+                <InputField type="text" name="firstName" id="firstName" autoComplete="given-name" validation={validateFirstName} label="First Name"/>
+                <InputField type="text" name="lastName" id="lastName" autoComplete="family-name" validation={validateLastName} label="Last Name"/>
               </div>
-              <InputField label="Phone Number" type="tel" name="phone" id="phone" autoComplete="tel" onChange={(e) => setHasPhoneNumber (e.target.value.trim () !== '')}/>
+              <InputField label="Phone Number" type="tel" name="phone" id="phone" autoComplete="tel" validation={validatePhoneNumber} onChange={(e) => setHasPhoneNumber (e.target.value.trim () !== '')}/>
               <Checkbox label="I agree to let Vulpine AI call my phone number. I understand that I can revoke this right at any time in the account settings."/>
               <Checkbox label="I agree to let Vulpine AI text my phone number. I understand that I can revoke this right at any time in the account settings."/>
               <Checkbox label="I agree to the " url="/legal/sms-terms-and-conditions" urlTitle="SMS Terms and Conditions"/>

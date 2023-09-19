@@ -92,7 +92,7 @@ export const AuthProvider = ({ children, app }) => {
     });
 
     return () => unsubscribe ();
-  }, []);
+  }, [auth]);
 
   const afterSignin = async (user) => {
     const token = await getIdToken (user);
@@ -102,7 +102,7 @@ export const AuthProvider = ({ children, app }) => {
   };
 
   const signup = async (email, password, confirmPassword) => {
-    if (password != confirmPassword) {
+    if (password !== confirmPassword) {
       throw new Error ('Passwords do not match');
     }
     const { user } = await createUserWithEmailAndPassword (auth, email, password);
@@ -134,8 +134,6 @@ export const AuthProvider = ({ children, app }) => {
       {children}
     </AuthContext.Provider>
   );
-
-  // return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 };
 
 export const useFirestore = () => {

@@ -1,11 +1,11 @@
+// react
 import React, { useEffect, useState } from 'react';
 import { getIdToken, onAuthStateChanged } from 'firebase/auth';
 import { useAuth, useFirestore } from '/src/Providers/Firebase';
 import { useNavigate, Link } from 'react-router-dom';
-import DashboardHome from './DashboardHome';
+import DashboardTab from './DashboardTab';
 import AccountSettingsTab from './AccountSettingsTab';
 import logo from '/src/Assets/Public/Logo/logo-placeholder-image.png';
-import '/src/Assets/Private/Dashboard/Dashboard.css';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState ('dashboard');
@@ -52,19 +52,19 @@ const Dashboard = () => {
 
   return (
     <div className="theme-primary flex h-screen">
-      <div id="navigationDiv">
-        <nav id="navigation">
+      <div className="w-48">
+        <nav className="fixed h-screen overflow-y-auto bg-blue-500 p-0">
           <div className="flex flex-col h-full justify-between">
             <div>
               <Link to="/">
-                <button className="dashboard-logo mb-4">
+                <button className="flex justify-center w-full p-0 m-0 border-none bg-transparent cursor-pointer h-20 outline-none text-white mb-4">
                   <img src={logo} alt="Logo" className="w-24 cursor-pointer" />
                 </button>
               </Link>
               <ul className="list-none p-0">
                 <li>
-                  <button className="tab" onClick={() => setActiveTab ('dashboard')}>
-                Dashboard
+                  <button className="flex items-center justify-between w-full px-5 py-4 m-0 border-none bg-transparent cursor-pointer text-lg text-left h-20 outline-none text-white hover:bg-black hover:bg-opacity-20 transition-colors duration-300" onClick={() => setActiveTab ('dashboard')}>
+                    Dashboard
                     <span className="material-icons ml-2">dashboard</span>
                   </button>
                 </li>
@@ -73,14 +73,14 @@ const Dashboard = () => {
             <div>
               <ul className="list-none p-0 mb-0">
                 <li>
-                  <button className="tab" onClick={() => setActiveTab ('accountSettingsTab')}>
-                Settings
+                  <button className="flex items-center justify-between w-full px-5 py-4 m-0 border-none bg-transparent cursor-pointer text-lg text-left h-20 outline-none text-white hover:bg-black hover:bg-opacity-20 transition-colors duration-300" onClick={() => setActiveTab ('accountSettingsTab')}>
+                    Settings
                     <span className="material-icons ml-2">settings</span>
                   </button>
                 </li>
               </ul>
-              <button className="tab" onClick={handleLogout}>
-            Logout
+              <button className="flex items-center justify-between w-full px-5 py-4 m-0 border-none bg-transparent cursor-pointer text-lg text-left h-20 outline-none text-white hover:bg-black hover:bg-opacity-20 transition-colors duration-300" onClick={handleLogout}>
+                Logout
                 <span className="material-icons ml-2">logout</span>
               </button>
             </div>
@@ -88,7 +88,7 @@ const Dashboard = () => {
         </nav>
       </div>
       <main className="flex-grow p-4">
-        {activeTab === 'dashboard' && <DashboardHome />}
+        {activeTab === 'dashboard' && <DashboardTab />}
         {activeTab === 'accountSettingsTab' && <AccountSettingsTab />}
       </main>
     </div>

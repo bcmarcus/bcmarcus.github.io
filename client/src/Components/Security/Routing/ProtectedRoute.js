@@ -1,8 +1,7 @@
 // ProtectedRoute.js
-import React, { Suspense, useState, useEffect } from 'react';
-import { useNavigate, Navigate, Outlet } from 'react-router-dom';
+import React, { Suspense } from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '/src/Providers/Firebase';
-import Loading from './Loading';
 
 const ProtectedRoute = () => {
   const { token, loading } = useAuth ();
