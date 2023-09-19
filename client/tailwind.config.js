@@ -1,9 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content:  ['./src/**/*.{js,jsx,ts,tsx,html}'],
+  content: ['./src/**/*.{js,jsx,ts,tsx,html}'],
   safelist: ['bg-dark', 'text-dark-accent', 'hover:text-dark', 'hover:bg-dark-accent',
-        'bg-light', 'text-light-accent', 'hover:text-light', 'hover:bg-light-accent'],
- 
+    'bg-light', 'text-light-accent', 'hover:text-light', 'hover:bg-light-accent'],
+
   darkMode: 'class',
   theme: {
     extend: {

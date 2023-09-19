@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function InputField ({ label, validation, ...props }) {
+function InputField ({ label, validation, className, ...props }) {
   const [error, setError] = useState ('');
 
   const handleChange = (e) => {
@@ -14,9 +14,9 @@ function InputField ({ label, validation, ...props }) {
   };
 
   return (
-    <div className="flex flex-grow flex-col mb-4 mx-6">
+    <div className={`theme-primary smooth-transition flex flex-grow flex-col ${className}`}>
       {label && <label className="mb-2">{label}</label>}
-      <input className="text-black border rounded p-2" {...props} onChange={handleChange} />
+      <input className="smooth-transition theme-primary text-black border rounded p-2" {...props} onChange={handleChange} />
       {error && <p className="text-red-500">{error}</p>}
     </div>
   );

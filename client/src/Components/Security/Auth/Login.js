@@ -66,9 +66,9 @@ const Login = () => {
 
   return (
     <FormLayout>
-      <div className="theme-primary">
+      <div className="theme-primary smooth-transition">
         {/* Wrap the "Login" title, "or create an account" link, and the form in a container */}
-        <div className="login-container theme-primary">
+        <div className="login-container theme-primary smooth-transition">
           {/* Wrap the "Login" title and the "or create an account" link in a single container */}
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             {/* Update the "Login" heading */}
@@ -76,7 +76,7 @@ const Login = () => {
 
             {/* Add the "or create an account" link */}
             <div className="create-account-link">
-              <Link className="text-dark-accent dark:text-light-accent hover:underline" to="/register">or create an account</Link>
+              <Link className="text-dark-accent dark:text-light-accent hover:underline smooth-transition" to="/register">or create an account</Link>
             </div>
           </div>
 
