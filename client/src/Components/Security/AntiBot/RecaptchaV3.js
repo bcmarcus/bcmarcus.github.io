@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { RecaptchaVerifier } from 'firebase/auth';
+// import { RecaptchaVerifier } from 'firebase/auth';
 import { useAuth } from '/src/Providers/Firebase';
 
 const RecaptchaV3 = () => {
