@@ -1,24 +1,48 @@
 // Login.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '/src/Providers/Firebase';
+import { useAuth } from '../../../Providers/Firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import FormLayout from '../../Basic/Layouts/FormLayout';
 import googleLogo from '/src/Assets/Public/External/googleLogo.png';
 import appleLogo from '/src/Assets/Public/External/appleLogo.png';
 import '/src/Assets/Public/Login/login.css';
 import InputField from '../../Basic/Forms/InputField';
+import { alwaysValid } from '../../Security/InputValidation';
 
 const Login = () => {
   const [email, setEmail] = useState ('');
   const [password, setPassword] = useState ('');
   const [error, setError] = useState ('');
-  const { signin, googleProvider, appleProvider, signInWithPopup, afterSignin, resetPassword, token, auth } = useAuth ();
+  const { signin, googleProvider, appleProvider, signInWithPopup, afterSignin, resetPassword, auth } = useAuth ();
+  const [user, setUser] = useState (null);
+  const [token, setToken] = useState (null);
+  const [loading, setLoading] = useState (true);
 
   const navigate = useNavigate ();
 
-  if (token) {
-    navigate ('/dashboard');
-  }
+  useEffect (() => {
+    const unsubscribe = onAuthStateChanged (auth, (user) => {
+      if (user) {
+        // User is signed in, get the token
+        user.getIdToken ().then ((token) => {
+          // Save the token to local storage
+          localStorage.setItem ('jwtToken', token);
+          setToken (token);
+          setUser (user);
+          navigate ('/dashboard');
+        });
+      } else {
+        // User is signed out
+        setToken (null);
+        setUser (null);
+      }
+      setError (false);
+      setLoading (false);
+    });
+
+    return () => unsubscribe ();
+  }, [auth, navigate]);
 
   const handleSubmit = async (event) => {
     event.preventDefault ();
@@ -81,23 +105,25 @@ const Login = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col items-start mt-5">
-            <form className="flex flex-col items-start mt-5">
-              <InputField
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail (e.target.value)}
-                className="mb-2 box-border p-2 border-gray-300 w-full text-lg"
-              />
-              <InputField
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword (e.target.value)}
-                className="mb-2 box-border p-2 border-gray-300 w-full text-lg"
-              />
-              <button type="submit" className="bg-blue-500 text-white p-2 border-none rounded-md w-full font-bold cursor-pointer mt-0 hover:bg-blue-700">Sign in</button>
-            </form>
+            <InputField
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail (e.target.value)}
+              className="mb-2 box-border p-0 border-gray-300 w-full text-lg"
+              innerClassName="w-full"
+              validation={alwaysValid}
+            />
+            <InputField
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword (e.target.value)}
+              className="mb-2 box-border p-0 border-gray-300 w-full text-lg"
+              innerClassName="w-full"
+              validation={alwaysValid}
+            />
+            <button type="submit" className="bg-blue-500 text-white p-2 border-none rounded-md w-full font-bold cursor-pointer mt-0 hover:bg-blue-700">Sign in</button>
 
 
             {/* Add a "Forgot password?" button */}

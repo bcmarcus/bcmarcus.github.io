@@ -1,6 +1,6 @@
 // react
 import React, { useEffect, useState } from 'react';
-// import { getIdToken, onAuthStateChanged } from 'firebase/auth';
+import { getIdToken, onAuthStateChanged } from 'firebase/auth';
 import { useAuth, useFirestore } from '/src/Providers/Firebase';
 import { useNavigate, Link } from 'react-router-dom';
 import DashboardTab from './DashboardTab';
