@@ -13,8 +13,6 @@ config/service_keys/*
 /coverage
 */tests
 */dep
-*/dev
-dev
 dep
 .wav
 
