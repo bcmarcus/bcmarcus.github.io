@@ -212,7 +212,7 @@ async function testAI () {
     'Are you an AI?',
     'What do you do as an AI?',
     'What are your tasks?',
-    // "What are your thought on the war in afghanistan and what should the US there?"
+    // "What are your thought on the war in afghanistan and should the US there?"
   ];
 
   for (let i = 0; i < queries.length; i++) {
@@ -224,6 +224,9 @@ async function testResearch () {
   console.log ('\n\nTestAI: ');
   queries = [
     'Write a 1000 word paper on The Structure of Thinking and Technology by Henryk Skolimowski',
+    // 'What happened with the delta diarrhea plane',
+    // 'Who is hiroi hikuri',
+    // 'who are the batters with the highest tOPS+ against the seattle mariners in the 2023 MLB regular season',
   ];
 
   for (let i = 0; i < queries.length; i++) {
@@ -242,7 +245,7 @@ async function testGPT () {
   global.useCritics = true;
 
 
-  global.chat = false;
+  global.chat = true;
 
 
   // do bucket stuff to get user
