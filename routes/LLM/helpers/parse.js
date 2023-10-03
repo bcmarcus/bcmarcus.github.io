@@ -1,6 +1,8 @@
 const { getFunctionDetailsStr } = require ('./metadataHelpers');
+const { makeTranscript } = require ('./makeTranscript');
+const { getSystemHasInfo } = require ('../defaultSystemIntel');
+const { askGPT } = require ('../GPT/askGPT');
 
-const makeTranscript = require ('./');
 
 /**
   * Parses an input string into a properties object.
@@ -104,4 +106,6 @@ async function parseInfo (messages, LLMFunctionDetails) {
   return parsedLLMData;
 }
 
-module.exports = parseInfo;
+module.exports = {
+  parseInfo,
+};

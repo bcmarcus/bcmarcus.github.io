@@ -34,8 +34,8 @@ callWSS.on ('connection', (twilioWS) => {
   const speechToText = new SpeechToText ();
   const mediaMap = new Map ();
 
-  
-  let user = 
+
+  // let user =
   // ** add user information here, if any exists ** //
   const voiceID = '21m00Tcm4TlvDq8ikWAM';
   const streamingLatency = 4;

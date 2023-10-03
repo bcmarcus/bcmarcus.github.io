@@ -30,6 +30,7 @@
     "@google-cloud/logging": "^11.0.0",
     "@google-cloud/secret-manager": "^5.0.1",
     "@google-cloud/speech": "^6.0.2",
+    "@postlight/mercury-parser": "^2.2.1",
     "alawmulaw": "^6.0.0",
     "audio-resampler": "^1.0.1",
     "axios": "^1.5.0",

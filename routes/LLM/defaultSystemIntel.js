@@ -1,16 +1,34 @@
 const { logWarning } = require ('../utils/logging');
 const { format } = require ('./helpers/systemIntelUtils');
+const { getExamples } = require ('./helpers/metadataHelpers');
+/**
+  * Formats the LLM function details and logs a warning if the details are improperly formatted.
+  * Returns an object with role and content properties.
+  * @function getSystemIntelSecretary
+  * @param {Object} user - The user object from firebase
+  * @param {Object} LLMFunctionsMetadata - The details of the LLM function.
+  * @return {Object} An object with role and content properties.
+  */
+function getUserInformation (user) {
+  if (!user) {
+    return 'There is no user specific information.';
+  }
+  return '';
+  // else {
+  // return user.
+  // }
+}
 
 /**
   * Formats the LLM function details and logs a warning if the details are improperly formatted.
   * Returns an object with role and content properties.
   * @function getSystemIntelSecretary
   * @param {Object} user - The user object from firebase
-  * @param {Object} LLMFunctionDetails - The details of the LLM function.
+  * @param {Object} LLMFunctionsMetadata - The details of the LLM function.
   * @return {Object} An object with role and content properties.
   */
-function getSystemIntelSecretary (user, LLMFunctionDetails) {
-  const formattedDetails = format (LLMFunctionDetails);
+function getSystemIntelSecretary (user, LLMFunctionsMetadata) {
+  const formattedDetails = format (LLMFunctionsMetadata);
   if (!formattedDetails) {
     logWarning ('The LLM function details are in an improper format.');
     return;
@@ -33,8 +51,7 @@ function getSystemIntelSecretary (user, LLMFunctionDetails) {
     The function calls are as follows:
     ${formattedDetails}
 
-    Here is some information about me to help you with complete your task:
-    ${getUserInformation ()}
+    ${getUserInformation (user)}
 
     Here are more directions that you must follow:
     If you already know the answer to my prompt, simply answer it, and do not make a function call.
@@ -66,17 +83,17 @@ function getSystemIntelSecretary (user, LLMFunctionDetails) {
   * Formats the LLM function details and logs a warning if the details are improperly formatted.
   * Returns an object with role and content properties.
   * @function getSystemHasInfo
-  * @param {Object} LLMFunctionDetails - The details of the LLM function.
+  * @param {Object} LLMFunctionsMetadata - The details of the LLM function.
   * @return {Object} An object with role and content properties.
   */
-function getSystemHasInfo (LLMFunctionDetails) {
-  const formattedDetails = format (LLMFunctionDetails);
+function getSystemHasInfo (LLMFunctionsMetadata) {
+  const formattedDetails = format (LLMFunctionsMetadata);
   if (!formattedDetails) {
     logWarning ('The LLM function details are in an improper format.');
     return;
   }
 
-  const examples = getExamples (LLMFunctionDetails);
+  const examples = getExamples (LLMFunctionsMetadata);
   if (!examples) {
     logWarning ('The LLM function details are in an improper format.');
     return;
@@ -113,10 +130,10 @@ function getSystemHasInfo (LLMFunctionDetails) {
 /**
   * Returns an object with role and content properties.
   * @function getDefaultSystemCritic
-  * @param {Object} LLMFunctionDetails - The details of the LLM function.
+  * @param {Object} LLMFunctionsMetadata - The details of the LLM function.
   * @return {Object} An object with role and content properties.
   */
-function getDefaultSystemCritic (LLMFunctionDetails) {
+function getDefaultSystemCritic (LLMFunctionsMetadata) {
   return {
     'role': 'system',
     'content': `You are an supervisor for a user. You must ensure that they follow the proper conventions. 

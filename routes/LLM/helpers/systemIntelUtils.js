@@ -1,4 +1,5 @@
 const { logWarning } = require ('../../utils/logging');
+const { formatParams } = require ('./metadataHelpers');
 
 /**
   * An array of strings that represent metadata for nested functions.

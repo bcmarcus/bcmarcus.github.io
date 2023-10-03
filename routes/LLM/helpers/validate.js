@@ -1,4 +1,5 @@
 const { getFunctionDetailsAction } = require ('./metadataHelpers');
+const { parseInfo } = require ('./parse');
 
 /**
   * Validates the output of the LLM.
