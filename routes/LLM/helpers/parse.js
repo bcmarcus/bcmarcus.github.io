@@ -1,7 +1,7 @@
 const { getFunctionDetailsStr } = require ('./metadataHelpers');
 const { makeTranscript } = require ('./makeTranscript');
 const { getSystemHasInfo } = require ('../defaultSystemIntel');
-const { askGPT } = require ('../GPT/askGPT');
+const { askLLM } = require ('../askLLM');
 
 
 /**
@@ -82,13 +82,11 @@ async function parseInfo (messages, LLMFunctionDetails) {
   // gpt
   logDev (`ParseInfo transcript: ${transcript}`);
 
-  const infoOutput = await askGPT (hasInfoMessages);
+  const infoOutput = await askLLM (hasInfoMessages);
 
   if (!infoOutput) {
     logDev ('An error occured while using the GPT validator');
   }
-
-  logDev (`ParseInfo info output: ${infoOutput}`);
 
   const functionDetails = await getFunctionDetailsStr (infoOutput.content, LLMFunctionDetails);
   // see if it really is good data

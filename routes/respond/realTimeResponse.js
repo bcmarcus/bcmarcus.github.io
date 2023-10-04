@@ -24,7 +24,7 @@ async function realTimeResponse (user, communicationHandler, messages) {
 
   if (communication.realTime) {
     logDev ('Start time for GPTStream');
-    const GPTStream = await askGPTStream (messages);
+    const GPTStream = await askLLMStream (messages);
     logDev ('End time for GPTStream');
     // go through communication in real time
     for await (const part of GPTStream) {
@@ -64,7 +64,7 @@ async function realTimeResponse (user, communicationHandler, messages) {
   } else {
     // go through communication in as slow as you want, using a better method
 
-    const gptResponse = await askGPT (messages);
+    const gptResponse = await askLLM (messages);
     if (startsWithOneOf (gptResponse, ignoreSequences)) {
       proceedCheckPromise = proceedCheck (messages, gptResponse);
     }

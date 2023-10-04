@@ -5,9 +5,10 @@ const Mercury = require ('@postlight/mercury-parser');
 
 const { exit } = require ('process');
 const { logWarning, logDev } = require ('../../../utils/logging');
-const { askGPT } = require ('../../GPT/askGPT');
+const { askLLM } = require ('../../askLLM');
 const { search } = require ('../simpleTask/search');
 const maxTries = 1;
+const numWebResults = 3;
 
 /**
   * Executes research based on provided arguments and logs warnings for invalid arguments.
@@ -25,36 +26,12 @@ async function execute (args) {
   const { query, length } = args;
   let queries = [];
 
-  const researchMainMessages = [
-    systemIntelResearchMain,
-    {
-      role: 'user',
-      content: '',
-    },
-  ];
-
-  const criticInfoMessages = [
-    systemIntelResearchCriticInfo,
-    {
-      role: 'user',
-      content: '',
-    },
-  ];
-
-  const criticFlow = [
-    systemIntelResearchCriticFlow,
-    {
-      role: 'user',
-      content: '',
-    },
-  ];
-
   // get the query
   // search query
   // get info for first 3 sites
   // throw each site, one by one, into the main researcher
   // test criticInfo. if fail -> run again (unless maxTries). if success -> check flow. if fail -> query once for better flow, and then continue
-  for (let i = 0; i < maxTries; i++) {
+  researchLoop: for (let i = 0; i < maxTries; i++) {
     try {
       // -- get the necessary query -- //
       const k = queries.length;
@@ -65,11 +42,12 @@ async function execute (args) {
           content: `Research Question: ${query.value}, Already Searched Queries: ${queries}`,
         },
       ];
-      const generatedQueries = await askGPT (queryMessages, 'gpt-3.5-turbo-0613');
+      const generatedQueries = await askLLM (queryMessages, 'gpt-3.5-turbo-0613');
       logDev (`Generated Queries: ${generatedQueries.content}`);
       queries = queries.concat (generatedQueries.content.split ('\n').filter ((entry) => entry.trim () !== ''));
 
       // go through each of the current queries.
+      const webResults = [];
       queryLoop: for (let q = k; q < queries.length; q++) {
         logDev (`Researching query: ${queries[q]}`);
         // -- search -- //
@@ -84,14 +62,13 @@ async function execute (args) {
 
           // this means that there is a jstor or doi out there available
           if (url) {
-            const researchPaper = await parseWebsite (`https://sci-hub.se/${url}`);
-            logDev ('SCIHUB', researchPaper);
+            const pdf = await parseWebsite (`https://sci-hub.se/${url}`);
+            webResults.push (pdf);
             continue queryLoop;
           }
         }
 
         // Search the web because it isn't a research paper
-        webResults = [];
         for (let l = 0; l < response.data.webPages.value.length; l++) {
           try {
             logDev (`Researching ${response.data.webPages.value[l].url}`);
@@ -104,7 +81,7 @@ async function execute (args) {
               singleWebResult.content = parsedContent;
               webResults.push (singleWebResult);
             }
-            if (webResults.length >= 3) {
+            if (webResults.length >= numWebResults) {
               break;
             }
           } catch (err) {
@@ -112,47 +89,84 @@ async function execute (args) {
           }
         }
 
-        console.log (webResults);
-        exit (1);
+
+        let mainMessageContent = `
+          Research Question: ${query}\n
+          Length: ${length}\n
+          Current Paper: ${currentResearchPaper}
+          Entries: ${webResults.map ((result, index) => `Entry ${index+1}:${result.title}\n${result.content}`).join ('\n\n')}
+        `;
+
+        const mainMessageContentLength = systemIntelResearchMain.length + mainMessageContent;
+        mainMessageContent = mainMessageContent.substring (0, mainMessageContentLength);
 
         const researchMainMessages = [
           systemIntelResearchMain,
           {
             role: 'user',
-            content: '',
+            content: `
+              Research Question: ${query}\n
+              Length: ${length}\n
+              Current Paper: ${currentResearchPaper}
+              Entries: ${webResults.map ((result, index) => `Entry ${index+1}:${result.title}\n${result.content}`).join ('\n\n')}
+            `,
           },
         ];
 
-        snippets = [];
+        console.log (researchMainMessages);
+        exit (1);
 
-        if (response.data && response.data.webPages && response.data.webPages.value.length != 0) {
-          for (let j = 0; j < response.data.webPages.value.length; j++) {
-            if (response.data.webPages.value[j].snippet) {
-              snippets.push (response.data.webPages.value[j].snippet);
-            }
+        // actually use the web results to make the output:
+        const researchMainResponse = await askLLM (researchMainMessages, 'gpt-4');
+        logDev ('Search GPTResponse: ', researchMainResponse);
+        currentResearchPaper = researchMainResponse.content;
+
+        if (i + 1 != maxTries) {
+          // test critic info
+          const researchCriticInfoMessages = [
+            systemIntelResearchCriticInfo,
+            {
+              role: 'user',
+              content: `
+                Research Question: ${query}\n
+                Research Paper: ${currentResearchPaper}
+              `,
+            },
+          ];
+
+          const researchCriticInfo = await askLLM (researchCriticInfoMessages, 'gpt-4');
+
+          if (researchCriticInfo.content !== 'Sufficient') {
+            criticError = `The current paper is insufficient due to this missing information. ${currentResearchPaper}`;
+            continue researchLoop;
           }
-        } else {
-          return;
+
+          // test critic flow
+          const researchCriticFlowMessages = [
+            systemIntelResearchCriticFlow,
+            {
+              role: 'user',
+              content: researchMainResponse.content,
+            },
+          ];
+
+          const researchCriticFlow = await askLLM (researchCriticFlowMessages, 'gpt-4');
+
+          if (researchCriticInfo.content !== 'Sufficient') {
+            criticError = `The current paper is insufficient due to poor flow. ${researchCriticFlow.content}`;
+            continue researchLoop;
+          }
+
+          return researchMainResponse;
         }
-
-        messages = [
-          defaultSystemIntelSearch,
-          {
-            'role': 'user',
-            'content': `query: ${query} \n results: ${JSON.stringify (snippets)}`,
-          },
-        ];
-
-        logDev (`Search query: ${query}`);
-        const gptResponse = await askGPT (messages, 'gpt-4-0613');
-        logDev ('Search GPTResponse: ', gptResponse);
-        return gptResponse.content;
       }
     } catch (error) {
       logWarning (`Research Error: ${error}`);
       return;
     }
   }
+
+  return 'An error occured due to the research loop';
 }
 
 /**
@@ -177,28 +191,96 @@ async function parseWebsite (url) {
   // Try to find the URL of the embedded PDF
   let pdfUrl;
   $ ('a, object, embed, iframe').each ((i, element) => {
-    const url = $ (element).attr ('href') || $ (element).attr ('data') || $ (element).attr ('src');
-    if (url && url.endsWith ('.pdf')) {
+    const url = $ (element).attr ('href') || $ (element).attr ('data') || $ (element).attr ('src') || $ (element).attr ('original-url');
+    if (url && url.includes ('.pdf')) {
       pdfUrl = url;
+      if (pdfUrl.startsWith ('//')) {
+        pdfUrl = 'https:' + pdfUrl;
+        pdfUrl = pdfUrl.split ('.pdf')[0] + '.pdf';
+      }
+
       return false; // Break the loop
     }
   });
+  // console.log (response);
 
   if (pdfUrl) {
     // Download the PDF file
-    console.log (pdfUrl);
-    const pdfResponse = await axios.get (pdfUrl, { responseType: 'arraybuffer' });
+    pdfUrl = pdfUrl.replace ('moscow', 'zero');
+
+    let pdfResponse;
+    try {
+      pdfResponse = await axios.get (pdfUrl, {
+        responseType: 'arraybuffer',
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+        validateStatus: function (status) {
+          return status >= 200 && status < 400; // Accepts status codes in the range 200-399
+        },
+        headers: {
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Accept-Encoding': 'gzip, deflate',
+          'Sec-Ch-Ua': '"Brave";v="117", "Not;A=Brand";v="8", "Chromium";v="117"',
+          'Sec-Ch-Ua-Mobile': '?0',
+          'Sec-Ch-Ua-Platform': '"Linux"',
+          'Sec-Fetch-Dest': 'document',
+          'Sec-Fetch-Mode': 'navigate',
+          'Sec-Fetch-Site': 'none',
+          'Sec-Fetch-User': '?1',
+          'Sec-Gpc': '1',
+          'Upgrade-Insecure-Requests': '1',
+          'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36',
+        },
+        withCredentials: true, // Include cookies in the request
+      });
+    } catch (err) {
+      if (err.response) {
+        console.log ('Server responded with an error', err.response);
+      } else if (err.request) {
+        console.log ('Request was made but no response was received', err.request);
+      } else {
+        console.log ('Error', err.message);
+      }
+
+      throw err;
+    }
 
     // Parse the PDF file
     const pdfData = await pdfParse (pdfResponse.data);
 
     // Get the metadata from Mercury Parser
     const mercuryData = await Mercury.parse (url);
+    // The text
+    let text = pdfData.text;
+    text = text.replace (/\n(?!\n)/g, '');
+
+    // Split the text into lines
+    const lines = text.split ('\n');
+
+    // Create a map to store line frequencies
+    const lineFreq = new Map ();
+
+    // For each line
+    for (const line of lines) {
+      // If the line is in the map, increment its frequency
+      if (lineFreq.has (line)) {
+        lineFreq.set (line, lineFreq.get (line) + 1);
+      } else {
+        lineFreq.set (line, 1);
+      }
+    }
+
+    // Create a new array of unique lines
+    const uniqueLines = lines.filter ((line) => lineFreq.get (line) === 1);
+
+    // Join the lines back together
+    const newText = uniqueLines.join ('\n');
 
     // Return the metadata from Mercury Parser and the content of the PDF file
     return {
       ...mercuryData,
-      content: pdfData.text,
+      content: newText,
     };
   } else {
     // Parse the website with Mercury Parser
@@ -246,10 +328,12 @@ async function parseURL (keywords, webPages) {
   */
 const systemIntelResearchMain = {
   'role': 'system',
-  'content': `You are a hyper precise summarizer. Your task, given a research question and search results, is to look through the results and pick out just the information that is necessary. 
-  There should not be any other messages, just strictly the answer. Furthermore, if you are taking direct quotes, be sure to site the source. 
+  'content': `You are a researcher. You will be given a research question, the length of the paper, the current version of the research paper (which may be nothing), a critique of the paper, and some search results denoted as entries.
+  Your task is to look through the entries to find the information that is necessary to write this paper. 
+  There should not be any other messages, just strictly a research paper. 
+  If you are taking direct quotes, be sure to site the source. 
   If the research question is an opinion, then use the information you are given and generate a reasonable opinion.
-  If the research question is something that has not been determined from the internet, then write out the steps for how to determine a reasonalbe answer to the question, and then attempt to determine the answer.
+  If the research question is something that has not been determined from the search entires, then write out the steps for how to determine a reasonalbe answer to the question, and then attempt to determine the answer.
   If the research question is none of the above, then simply write a compelling argument based around the research question.
   `,
 };
@@ -261,9 +345,10 @@ const systemIntelResearchMain = {
   */
 const systemIntelResearchCriticInfo = {
   'role': 'system',
-  'content': `You are a critic for a researcher. You will be given a search query and the length of the report, and you will determine whether or not it is sufficient for the query.
+  'content': `You are a critic for a researcher. You will be given a research question, the length that the research paper should be (which does not need to be perfectly accurate, just around there), and the actual research paper. 
+  Your task is to determine whether or not it is sufficient for the query.
   Remember, ONLY give the response that is necessary. Your response should either say 'Sufficient' or explain what is wrong with the research, such as it being too short, or it not having ALL of the required information.
-  Ensure that every single thing is mentioned from the research query.
+  Ensure that every single thing is mentioned from the research question.
   If the research question is about a complex topic, but asks for a simple explanation, then research it as if it was complex, and it will later be rewritten in a simple manner elsewhere.
 `,
 };
@@ -275,7 +360,8 @@ const systemIntelResearchCriticInfo = {
   */
 const systemIntelResearchCriticFlow = {
   'role': 'system',
-  'content': `You are a critic for a researcher. Your sole job is to determine whether the given research paper flows smoothly. This means that there is a clear progression of thought within the message. Do not comment on the length of the input, it will always be the correct length.
+  'content': `You are a critic for a researcher.  You will be given a research question, and the actual research paper. 
+  Your sole job is to determine whether the given research paper flows smoothly. This means that there is a clear progression of thought within the message. Do not comment on the length of the input, it will always be the correct length.
   Your response should either say 'Sufficient' or explain what is wrong with the input, such as it being too clunky, or not having a satisfying conclusion. Ensure that you write out EVERY single thing that is wrong with the flow. 
   Again, if nothing is wrong and the flow seems good for the given research paper, then respond with just 'Sufficient' and nothing else.
 `,
@@ -318,7 +404,7 @@ const functionDetails = {
   'requiredParams': {
     'query': {
       'type': 'string',
-      'description': 'The query to use for the search. It is better to be more specific than less specific.',
+      'description': 'The query to use for the search. Be incredibly specific to what the user is asking. It is always better to be more specific than less specific.',
     },
     'length': {
       'type': 'string',

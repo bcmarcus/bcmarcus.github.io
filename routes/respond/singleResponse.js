@@ -11,7 +11,7 @@ async function singleResponse (user, communicationHandler, messages) {
   let proceedCheckPromise;
 
   logDev ('Start time for GPTStream');
-  const fullText = await askGPT (messages);
+  const fullText = await askLLM (messages);
   logDev ('End time for GPTStream');
 
   if (startsWithOneOf (gptResponse, ignoreSequences)) {

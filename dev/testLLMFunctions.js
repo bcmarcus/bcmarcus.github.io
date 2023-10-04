@@ -14,7 +14,7 @@ const auth = admin.auth ();
 
 const domain = config.prod.app.domains[0];
 const bucket = admin.storage ().bucket ('gs://call-to-action-2afc3.appspot.com/');
-const { askGPT } = require ('../routes/LLM/GPT/askGPT');
+const { askLLM } = require ('../routes/LLM/askLLM');
 const { getSystemIntelSecretary } = require ('../routes/LLM/defaultSystemIntel');
 const { fixOutput } = require ('../routes/LLM/helpers/metadataHelpers');
 const { makeTranscript } = require ('../routes/LLM/helpers/makeTranscript');
@@ -36,8 +36,8 @@ const rl = readline.createInterface ({
 // console.log(gptFunctions);
 
 
-// const model = "gpt-3.5-turbo-0613";
-const model = 'gpt-4-0613';
+const model = 'gpt-3.5-turbo-0613';
+// const model = 'gpt-4-0613';
 
 global.logDev = logDev;
 global.logWarning = logWarning;
@@ -45,7 +45,7 @@ global.logWarning = logWarning;
 async function frame (messages) {
   // initial call
   // logDev("Frame: Start");
-  const output = await askGPT (messages, model);
+  const output = await askLLM (messages, model);
   output.content = await fixOutput (output.content);
   messages.push (output);
   // console.log ("FRAME: ", messages);

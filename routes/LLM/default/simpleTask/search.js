@@ -1,7 +1,7 @@
 const axios = require ('axios');
 
 const { logWarning, logDev } = require ('../../../utils/logging');
-const { askGPT } = require ('../../GPT/askGPT');
+const { askLLM } = require ('../../askLLM');
 
 /**
   * Executes a search based on provided arguments and logs warnings for invalid arguments.

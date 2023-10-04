@@ -1,4 +1,4 @@
-const { askGPT, askGPTStream } = require ('../LLM/GPT/askGPT');
+const { askLLM, askLLMStream } = require ('../LLM/askLLM');
 const { makeTranscript } = require ('../LLM/functions/LLMFunctionUtils');
 const { validateLLMOutput } = require ('../LLM/LLMUtils');
 const { logWarning, logDev } = require ('../utils/logging');
@@ -50,7 +50,7 @@ async function respond (communication, messages) {
 
   if (communication.realTime) {
     logDev ('Start time for GPTStream');
-    const GPTStream = await askGPTStream (messages);
+    const GPTStream = await askLLMStream (messages);
     logDev ('End time for GPTStream');
     // go through communication in real time
     for await (const part of GPTStream) {
@@ -90,7 +90,7 @@ async function respond (communication, messages) {
   } else {
     // go through communication in as slow as you want, using a better method
 
-    const gptResponse = await askGPT (messages);
+    const gptResponse = await askLLM (messages);
     if (startsWithOneOf (gptResponse, ignoreSequences)) {
       proceedCheckPromise = proceedCheck (messages, gptResponse);
     }

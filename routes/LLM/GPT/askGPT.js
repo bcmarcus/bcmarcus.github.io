@@ -1,8 +1,9 @@
 const OpenAI = require ('openai');
 const { logWarning } = require ('../../utils/logging');
 
-const gptModel = 'gpt-3.5-turbo-0613';
+const gptModel = 'gpt-3.5-turbo-16k';
 // const gptModel = "gpt-4-0613";
+// const gptModel = 'gpt-4-32k';
 
 /**
   * Prepares the options for the GPT model.
