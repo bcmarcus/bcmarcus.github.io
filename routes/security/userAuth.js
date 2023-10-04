@@ -1,6 +1,19 @@
 const { logDev } = require ('../utils/logging');
 
 const VoiceResponse = require ('twilio').twiml.VoiceResponse;
+const admin = require ('firebase-admin');
+
+function authorizeUserApplication (req, res, next) {
+  const token = req.headers['authorization'];
+
+  const decodedToken = admin.auth ().verifyIdToken (token).then (() => {
+    req.user = decodedToken;
+  }).catch (() => {
+    res.status (401).json ({ message: 'Unauthorized' });
+  });
+
+  console.log (decodedToken);
+}
 
 /**
   * Middleware function to authorize a user based on their phone number.
@@ -11,7 +24,7 @@ const VoiceResponse = require ('twilio').twiml.VoiceResponse;
   * @param {Object} res - The response object.
   * @param {function} next - The next middleware function.
   */
-function authorizeUser (req, res, next) {
+function authorizeUserCall (req, res, next) {
   const incomingNumber = req.body.From.trim ();
   const authorizedNumbers = ['+14256145153'];
 
@@ -74,4 +87,7 @@ function shaken (req) {
   return stirVerstat === 'A';
 }
 
-module.exports = authorizeUser; // export this middleware function
+module.exports = {
+  authorizeUserCall,
+  authorizeUserApplication, // export this middleware function
+};

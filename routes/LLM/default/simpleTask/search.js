@@ -16,17 +16,8 @@ async function execute (args) {
     return;
   }
 
-  const { validatedLLMData } = args;
-  if (!validatedLLMData) {
-    logWarning (`Search invalid args. validatedLLMData=${validatedLLMData}`, args);
-    return;
-  }
-
-  let query;
-  if (!validatedLLMData.parsedLLMData.query || !(query = validatedLLMData.parsedLLMData.query.value)) {
-    logWarning (`Search invalid args, query=${query}.`, args);
-    return;
-  }
+  let { query } = args;
+  query = query.value;
 
   try {
     const response = await search (query);

@@ -1,4 +1,6 @@
 const axios = require ('axios');
+const pdfParse = require ('pdf-parse');
+const cheerio = require ('cheerio');
 const Mercury = require ('@postlight/mercury-parser');
 
 const { exit } = require ('process');
@@ -65,10 +67,11 @@ async function execute (args) {
       ];
       const generatedQueries = await askGPT (queryMessages, 'gpt-3.5-turbo-0613');
       logDev (`Generated Queries: ${generatedQueries.content}`);
-      queries = queries.concat (generatedQueries.content.split ('\n'));
+      queries = queries.concat (generatedQueries.content.split ('\n').filter ((entry) => entry.trim () !== ''));
 
       // go through each of the current queries.
-      for (let q = k; q < queries.length; q++) {
+      queryLoop: for (let q = k; q < queries.length; q++) {
+        logDev (`Researching query: ${queries[q]}`);
         // -- search -- //
         const response = await search (queries[q]);
 
@@ -78,22 +81,38 @@ async function execute (args) {
 
         if (queries[q].toLowerCase ().includes ('doi') || queries[q].toLowerCase ().includes ('jstor')) {
           const url = await parseURL (['doi', 'jstor'], response.data.webPages.value);
-          console.log (url);
 
           // this means that there is a jstor or doi out there available
           if (url) {
-            parseWebsite (url);
+            const researchPaper = await parseWebsite (`https://sci-hub.se/${url}`);
+            logDev ('SCIHUB', researchPaper);
+            continue queryLoop;
           }
         }
 
-        //
-        webResult = [];
-        parseWebsite (response.data.webPages.value[0].url);
-        await webResult.push (await Mercury.parse (response.data.webPages.value[0].url));
-        await webResult.push (await Mercury.parse (response.data.webPages.value[1].url));
-        await webResult.push (await Mercury.parse (response.data.webPages.value[2].url));
+        // Search the web because it isn't a research paper
+        webResults = [];
+        for (let l = 0; l < response.data.webPages.value.length; l++) {
+          try {
+            logDev (`Researching ${response.data.webPages.value[l].url}`);
+            const singleWebResult = await Mercury.parse (response.data.webPages.value[l].url);
 
-        console.log ('here', webResult);
+            if (!singleWebResult.error && !singleWebResult.failed) {
+              const $ = cheerio.load (singleWebResult.content);
+              const parsedContent = $ ('body').text ();
+
+              singleWebResult.content = parsedContent;
+              webResults.push (singleWebResult);
+            }
+            if (webResults.length >= 3) {
+              break;
+            }
+          } catch (err) {
+            logWarning (err);
+          }
+        }
+
+        console.log (webResults);
         exit (1);
 
         const researchMainMessages = [
@@ -130,9 +149,60 @@ async function execute (args) {
         return gptResponse.content;
       }
     } catch (error) {
-      logWarning ('Research Error: ', error.message);
+      logWarning (`Research Error: ${error}`);
       return;
     }
+  }
+}
+
+/**
+  * Parse the content of a website or a PDF file from a given URL.
+  * If the URL points to a PDF file, it downloads the PDF file, parses the PDF file,
+  * gets the metadata from Mercury Parser, and returns the metadata and the content of the PDF file.
+  * If the URL doesn't point to a PDF file, it parses the website using Mercury Parser and returns the result.
+  * @async
+  * @function parseWebsite
+  * @param {string} url - The URL to parse.
+  * @return {Object} If the URL points to a PDF file, it returns an object that contains the metadata from Mercury Parser and the content of the PDF file.
+  * If the URL doesn't point to a PDF file, it returns the result of parsing the website using Mercury Parser.
+  * @throws {Error} If an error occurs while making a HEAD request to the URL, downloading the PDF file, parsing the PDF file, or parsing the website using Mercury Parser.
+  */
+async function parseWebsite (url) {
+  // Download the webpage
+  const response = await axios.get (url);
+
+  // Parse the webpage with Cheerio
+  const $ = cheerio.load (response.data);
+
+  // Try to find the URL of the embedded PDF
+  let pdfUrl;
+  $ ('a, object, embed, iframe').each ((i, element) => {
+    const url = $ (element).attr ('href') || $ (element).attr ('data') || $ (element).attr ('src');
+    if (url && url.endsWith ('.pdf')) {
+      pdfUrl = url;
+      return false; // Break the loop
+    }
+  });
+
+  if (pdfUrl) {
+    // Download the PDF file
+    console.log (pdfUrl);
+    const pdfResponse = await axios.get (pdfUrl, { responseType: 'arraybuffer' });
+
+    // Parse the PDF file
+    const pdfData = await pdfParse (pdfResponse.data);
+
+    // Get the metadata from Mercury Parser
+    const mercuryData = await Mercury.parse (url);
+
+    // Return the metadata from Mercury Parser and the content of the PDF file
+    return {
+      ...mercuryData,
+      content: pdfData.text,
+    };
+  } else {
+    // Parse the website with Mercury Parser
+    return await Mercury.parse (url);
   }
 }
 
